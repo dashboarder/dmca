@@ -1,0 +1,45 @@
+#!/usr/bin/perl -w
+
+if (@ARGV < 1) {
+        print "USAGE: rom_release <platform>\n";
+        exit(0);
+}
+
+$soc = shift @ARGV;
+$soc = lc($soc);
+
+print "Building SecureROM\n";
+system("sudo ~rc/bin/buildit -arch armv7 -project rom -noverify . -- APPLICATIONS=SecureROM TARGETS=$soc > /tmp/buildit.log 2> /tmp/buildit.error");
+ 
+print "Generating tarball\n";
+$user = getlogin();
+system("sudo chown -R $user:apple_ga /tmp/rom.roots");
+system("sudo chmod -R oga+w /tmp/rom.roots/rom");
+system("tar -C /tmp -zcvf rom.roots.tgz rom.roots 2> /tmp/rom.tgz.log");
+system("mv ./rom.roots.tgz /tmp");
+
+$dropbox = "/Volumes/CoreOS/SecureROM-Drops";
+
+print "Copying to DropBox\n";
+$seq = 1;
+if (-d "$dropbox/$soc") {
+        system("ls -ltU ". "$dropbox/$soc" . " | awk '{ if(substr(\$NF,11,1) > max) {max=substr(\$NF,11,1);} } END {print max\}' > /tmp/awk.out");
+        open(FILE, "</tmp/awk.out");
+        while(<FILE>) {
+                chomp($_);
+                $seq = $_;
+                $seq = $seq + 1;
+        }
+}
+else {
+        print "First release, setting up directory structure\n";
+        system("mkdir $dropbox/$soc");
+}
+system("mkdir $dropbox/$soc/SecureROM-$seq");
+system("cp /tmp/rom.roots.tgz $dropbox/$soc/SecureROM-$seq");
+
+print "Moving files\n";
+system("cp /tmp/rom.roots/rom~sym/build/"."$soc"."si-SecureROM-RELEASE/SecureROM.bin  $dropbox/$soc/SecureROM-$seq/");
+system("cp /tmp/rom.roots/rom~sym/build/"."$soc"."si-SecureROM-RELEASE/SecureROM.sys  $dropbox/$soc/SecureROM-$seq/");
+
+print "Done.\n";

@@ -1,0 +1,120 @@
+
+CHAIN VALIDATION
+
+- cert chain consists of concatenation of certificates (binary/der)
+- first is a trusted anchor (optional if embedded: PKI_CHECK_ANCHOR_BY_SHA1=0,
+  otherwise it needs to be there and is compared to an embedded SHA-1 hash), 
+  second intermediate, third leaf.
+- if PKI_APPLE_ROOT_CA=1, the chain is anchored to Apple's root, otherwise a
+  fake chain that matches all checks.
+- check signatures on chain
+- check intermediate cert subject CN: Apple Secure Boot Certification Authority
+- find spec oid extension in leaf and return pointer to blob in cert chain
+  memory
+- generate digest info from passed in hash and add padding
+- verify against signature (digest info || hash || padding)
+
+DEBUG style builds expose pki menu commands in iBoot that performs validation
+and will print failures.
+
+GENERATE FAKE CHAIN
+
+# Generate and self-sign test CA
+openssl req -newkey rsa:2048 -sha1 -days 365 -sha1 -subj "/C=US/O=Apple Inc./OU=Apple Certification Authority/CN=Apple Root CA" -nodes -keyout CA-key.pem -out CA-csr.pem
+openssl x509 -req -sha1 -in CA-csr.pem -signkey CA-key.pem -set_serial 0 -out CA-cert.pem -extfile SecureBootCertSpecExtension.txt -extensions CA_default
+
+# Generate and output request for intermediate
+openssl req -newkey rsa:2048 -sha1 -days 365 -sha1 -subj "/C=US/O=Apple Inc./OU=Apple Certification Authority/CN=Apple Secure Boot Certification Authority" -nodes -keyout intermediate-key.pem -out intermediate-csr.pem
+# Sign intermediate
+openssl x509 -req -sha1 -in intermediate-csr.pem -CA CA-cert.pem -CAkey CA-key.pem -set_serial 16 -out intermediate-cert.pem -extfile SecureBootCertSpecExtension.txt -extensions v3_req
+
+# Generate and output request for test leaf
+openssl req -newkey rsa:1024 -sha1 -days 365 -sha1 -subj "/C=US/O=Apple Inc./OU=Apple Secure Boot Certification Authority/CN=S5L8900 Secure Boot" -nodes -out leaf-prod-csr.pem -keyout leaf-prod-key.pem
+# Sign leaf
+openssl x509 -req -sha1 -in leaf-prod-csr.pem -CA intermediate-cert.pem -CAkey intermediate-key.pem -set_serial 1 -out leaf-prod-cert.pem -extfile SecureBootCertSpecExtension.txt -extensions prod_apple_spec_oid
+
+# Generate and output request for test leaf
+openssl req -newkey rsa:1024 -sha1 -days 365 -sha1 -subj "/C=US/O=Apple Inc./OU=Apple Secure Boot Certification Authority/CN=S5L8900 Secure Boot" -nodes -out leaf-dev-csr.pem -keyout leaf-dev-key.pem
+# Sign leaf
+openssl x509 -req -sha1 -in leaf-dev-csr.pem -CA intermediate-cert.pem -CAkey intermediate-key.pem -set_serial 2 -out leaf-dev-cert.pem -extfile SecureBootCertSpecExtension.txt -extensions dev_apple_spec_oid
+
+# convert certs and keys to der
+openssl x509 -in CA-cert.pem -outform DER -out CA-cert.der
+openssl rsa -in CA-key.pem -outform DER -out CA-key.der
+openssl x509 -in intermediate-cert.pem -outform DER -out intermediate-cert.der
+openssl x509 -in leaf-prod-cert.pem -outform DER -out leaf-prod-cert.der
+openssl x509 -in leaf-dev-cert.pem -outform DER -out leaf-dev-cert.der
+
+# generate blob and sign with leaf
+dd if=/dev/random of=blob bs=1000k count=1
+openssl dgst -binary -sha1 -out blob.sha1 blob
+openssl dgst -sign leaf-prod-key.pem -binary -sha1 -out blob-prod.sig blob
+openssl dgst -sign leaf-dev-key.pem -binary -sha1 -out blob-dev.sig blob
+
+# add CA-cert.der to fake_ca.h
+openssl x509 -in CA-cert.pem -C > for-fake_ca.h
+
+# partial chain for verification
+cat intermediate-cert.der leaf-dev-cert.der > dev-chain.der
+cat intermediate-cert.der leaf-prod-cert.der > prod-chain.der
+
+# BUILDS=DEBUG iBoot verification
+#usb get blob.sha1 0x09001000
+#usb get blob-dev.sig 0x09002000
+#usb get dev-chain.der 0x09003000
+#pki verify 0x09003000 1632 0x09002000 128 0x09001000 20
+
+Make sure to add the new root cert to lib/pki/anchor_ca.h and use it in
+lib/pki/chain-validation.c.
+
+SecureBootCertSpecExtension.txt:
+
+oid_section = new_oids
+
+[ CA_default ]
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always
+basicConstraints = critical,CA:true
+keyUsage = digitalSignature
+
+[ v3_req ]
+
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always
+
+[ new_oids ]
+apple_spec_oid=1.2.840.113635.100.6.1.1
+
+[ foo_apple_spec_oid ]
+1.2.840.113635.100.6.1.1=critical,DER:04:04:46:6f:6f:21
+# Octet (04) Length (04) Value (Foo!)
+#apple_spec_oid=critical,DER:FEEDFACE
+#apple_spec_oid=critical,ASN1:FORMAT:HEX,OCTETSTRING:FEEDFACE
+
+[ prod_apple_spec_oid ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always
+1.2.840.113635.100.6.1.1=critical,DER:04:24:33:67:6d:49:24:00:00:00:1c:00:00:00:00:00:00:00:2a:2a:2a:2a:44:4f:52:50:10:00:00:00:04:00:00:00:01:00:00:00
+
+[ dev_apple_spec_oid ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always
+1.2.840.113635.100.6.1.1=critical,DER:04:24:33:67:6d:49:24:00:00:00:1c:00:00:00:00:00:00:00:2a:2a:2a:2a:44:4f:52:50:10:00:00:00:04:00:00:00:00:00:00:00
+
+# 0x30 total: Img3, 0x30 skip, 0x1c size, 0x0 no signed data, **** type,
+# empty DATA, SMOD 0x0000000000000400
+
+# PROD, skip 16, len 4, val 0 => 44:4f:52:50:10:00:00:00:04:00:00:00:00:00:00:00
+# Img3 33:67:6d:49
+# skip 30:00:00:00
+# len  1c:00:00:00
+# lsgn 00:00:00:00
+# type 2a:2a:2a:2a
+# DATA 41:54:41:44:0c:00:00:00:00:00:00:00
+# SDOM 4d:4f:44:53:10:00:00:00:04:00:00:00:00:00:00:00

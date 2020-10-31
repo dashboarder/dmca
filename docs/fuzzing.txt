@@ -1,0 +1,83 @@
+Introduction
+============
+
+A number of iBoot modules have fuzzing interfaces. This document describes
+how to fuzz those modules, and how to set up a new module for fuzzing.
+
+There are a number of open and closed-source fuzzers available, but by far
+the best is AFL (american fuzzy lop): <http://lcamtuf.coredump.cx/afl/>.
+The rest of this document is geared towards fuzzing with AFL, but the
+interface is fairly generic.
+
+Getting AFL
+===========
+AFL is available in source format at http://lcamtuf.coredump.cx/afl/.
+Building should just be a matter of typing "make".
+
+The source includes a good README. The following AFL docs are also
+useful (in the AFL source):
+- docs/technical_details.txt
+- docs/status_screen.txt
+- docs/notes_for_asan.txt
+
+Instrumenting Test Binaries
+===========================
+
+AFL is an instrumentation-guided fuzzer, so the test case needs to be
+built with AFL's instrumentation. As described in the documents above,
+this is accomplished by using the afl-clang tool, which interposes on
+clang to modify the assembly produced by clang. It's possible to build
+iBoot's test binaries using afl-clang as follows:
+    make TESTS_FLAVOR=tests-darwin-afl USE_XCRUN=NO HOST_CC='path/to/afl/afl-clang -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk' build-tests
+
+The exact SDK path will depend on the version of OS X being used.
+
+This should produce a number of test binaries located at:
+    ./build/test-darwin-afl/<test-name>/<test-name>
+
+By convention, iBoot fuzz tests have names ending in -fuzz and take a
+test input file as the first argument on the commandline.
+
+Seeding the fuzzer
+==================
+
+It's possible to seed the fuzzer with a file containing all 0's:
+    dd if=/dev/zero of=testcases/zeroes bs=1024 count=1
+
+If the binary format being fuzzed is not too complicated, this may
+produce good results.
+
+However, the fuzzer does best by starting valid input files. If possible,
+their size should be no more than a few kB. If this isn't possible, just
+find seed test cases that are as small as possible.
+
+Running Fuzz Jobs
+=================
+
+    mkdir testcases
+    <copy test cases to testcases>
+    mkdir findings
+
+    path/to/afl/afl-fuzz -i testcases -o findings -t 500 ./build/tests-darwin-afl/<test-name>/<test-name> @@
+
+Interpreting Results
+====================
+
+Read the AFL documentation for details on interpreting the results. Here
+are a few tips:
+- Inputs producing crashes are obviously very important, and can be found
+  in findings/crashes.
+- Inputs producing hangs may be interesting, or may be a result of the
+  system being briefly bogged down. Run the test manually to confirm if
+  it's a real hang. Real hangs can be a sign of a programming error, and
+  can make it harder to find crashing test cases.
+- Inputs producing results that vary from run to run are often a sign of
+  use after free or buffer overflows. Use address sanitizer to diagnose.
+
+As AFL runs, it produces a corpus of input files that result in different
+paths through the program under test. Even if afl doesn't find crashes,
+this is a useful set of inputs to run with address sanitizer. This can be
+done as follows:
+    make SANITIZE=YES build-tests
+    for i in findings/queue/*; do echo; echo $i; ./build/tests-darwin-sanitize/<test-name>/<test-name> $i; done
+

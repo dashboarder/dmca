@@ -1,0 +1,83 @@
+MMU usage on ARMv8
+------------------
+
+= Permissions =
+Pages are mapped with the minimum permissions required. This means
+all data is mapped as Write/XN (read/write but not execute)
+and code is mapped as read-only. To prevent the page tables from
+being modified by an attacker, the page tables are not mapped into
+virtual memory at all. Therefore, the page tables cannot be modified
+after the MMU is turned on.
+
+To protect against buffer overflows, some pages are left unmapped
+to act as guard pages. For applications like iBoot that need to
+clear memory, these pages need to be cleared prior to enabling the
+MMU.
+
+The ROM trampoline is a special case, as it needs to be copied out
+of the ROM into SRAM so that it can be executed from outside of ROM
+after ROM access is disabled. To deal with this, the trampoline is
+copied by startup code prior to the MMU being enabled, and then
+mapped as read-only. This allows the ROM to jump into the trampoline
+without having a security risk from writeable code.
+
+To enforce all of the above, the WXN (write execute never) bit is
+set in SCTLR whenever the MMU is enabled.
+
+= Secure/Non-secure Walks
+
+The top level page table (regardless of how many total levels you
+have) is always walked in secure mode in EL3 regardless of
+SCR_EL3.NS. For subsequent levels, the page table attributes (which we
+mark as non-secure) are used. Almost immediately after starting up on
+cpus with EL3 support, iBoot switches to EL3 non-secure mode. If we
+tried to dynamically update the top-level page table to add a mapping
+those writes would be non-secure and woudl be tagged as such in the L2
+cache. This means they wouldn't be seen by the top-level page table walk
+(which remember is always secure) resulting in an abort when the code
+tries to access the new mapping.
+
+This is not an issue when the page tables are not modified after
+enabling the MMU, so this note is mainly for historical purposes.
+See <rdar://problem/11973915>.
+
+= Address space sizes =
+
+All of our ARMv8 CPUs are in SoCs with 36-bit physical addresses.
+Because we always map so that a virtual address corresponds to its
+physical address, we set the virtual address size to 36 bits in TCR
+to match the physical address. As a result, one less level of walk
+is required than if we used the full 48-bit virtual addresses
+supported by the architecture
+
+Address translation source bits at L0..L3 depend on selection of
+4KB/16KB/64KB granule.
+
+= Translation table sizes =
+
+Because translation tables cannot be modified after enabling the MMU,
+they need to live in their own pages. Therefore, regardless of how
+many entries in a tables are used, each table must be aligned to and
+have the size of a mapping granule.
+
+L0 Translation table.
+Not used
+
+L1 Translation table.
+Granule	bits	entries		size in bytes	entry type
+    4KB	[35:30]	128		4096		  1GB L2 or block
+   16KB	N/A	0		0		 64GB L2
+   64KB	N/A	0		0		  4TB L2
+
+L2 Translation table.
+Granule	bits	entries		size in bytes	entry type
+    4KB	[29:21]	512		4096		  2MB L3 or block
+   16KB	[35:25]	2048		16384		 32MB L3 or block
+   64KB	[35:29]	2048		65536		512MB L3 or block
+
+L3 Translation table
+Granule	bits	entries		size in bytes	entry type
+    4KB	[20:12]	512		4096		  4KB block
+   16KB	[24:14]	2048		16384		 16KB block
+   64KB	[28:16]	8192		65536		 64KB block
+

@@ -1,0 +1,334 @@
+/*
+ * Copyright (C) 2009-2013 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+
+/* Default K93a SoC Pin Configuration */
+
+/* Same drive strength for AP and DEV */
+#define AUD_SPKRAMP_MUTE_L_DRIVE_STR	DRIVE_X1
+#define DFU_STATUS_DRIVE_STR		DRIVE_X1
+#define DWI_DRIVE_STR			DRIVE_X2
+#define FMI_DRIVE_STR			DRIVE_X1	// SecureROM is X2
+#define GRAPE_DRIVE_STR			DRIVE_X1
+#define MLC_DRIVE_STR			DRIVE_X1
+#define PM_BT_WAKE_DRIVE_STR		DRIVE_X2
+#define PM_CAM_SHUTDOWN_DRIVE_STR	DRIVE_X1
+#define CLK_CAM_DRIVE_STR		DRIVE_X3
+#define PM_KEEPACT_DRIVE_STR		DRIVE_X1
+#define RST_PMU_IN_DRIVE_STR		DRIVE_X1
+#define SDIO_WL_DRIVE_STR		DRIVE_X1
+#define VIDEO_AMP_EN_DRIVE_STR		DRIVE_X1
+#define I2C_DRIVE_STR			DRIVE_X2
+#define UART_5_DRIVE_STR		DRIVE_X2
+#define I2S_DRIVE_STR			DRIVE_X2
+#define I2S_MCK_DRIVE_STR		DRIVE_X3
+#define SPI_CS_DRIVE_STR		DRIVE_X1
+#define SPI_DATA_DRIVE_STR		DRIVE_X2
+
+/* Different drive strength for AP and DEV.		// AP DEV */
+#if PIN_CFG_AP
+#define BT_UART_DRIVE_STR		DRIVE_X2	// X2 X3
+#define UART_0_DRIVE_STR		DRIVE_X1	// X2 X3
+#else
+#define BT_UART_DRIVE_STR		DRIVE_X3	// X2 X3
+#define UART_0_DRIVE_STR		DRIVE_X2	// X2 X2
+#endif
+
+#define FMI_SLEW_RATE			SLEW_RATE_SLOW
+
+#if PIN_CFG_AP
+static const u_int32_t gpio_default_cfg_ap[GPIO_GROUP_COUNT * GPIOPADPINS] = {
+#elif PIN_CFG_DEV
+static const u_int32_t gpio_default_cfg_dev[GPIO_GROUP_COUNT * GPIOPADPINS] = {
+#endif
+/* Port  0 */
+	CFG_IN,								// GPIO0		-> MENU_KEY (REQUEST_DFU2)
+	CFG_IN,								// GPIO1		-> HOLD_KEY (REQUEST_DFU1)
+	CFG_IN | PULL_UP,						// GPIO2		-> AUD_VOL_UP_L
+	CFG_IN | PULL_UP,						// GPIO3		-> AUD_VOL_DOWN_L
+	CFG_IN,								// GPIO4		-> SRL_L
+	CFG_OUT_0 | AUD_SPKRAMP_MUTE_L_DRIVE_STR,			// GPIO5		-> AUD_SPKRAMP_MUTE_L
+	CFG_DISABLED,							// GPIO6		->
+	CFG_OUT_0 | PM_BT_WAKE_DRIVE_STR,				// GPIO7		-> PM_BT_WAKE
+
+/* Port  1 */
+	CFG_DISABLED,							// GPIO8		->
+	CFG_DISABLED,							// GPIO9		->
+	CFG_DISABLED,							// GPIO10		->
+	CFG_DISABLED,							// GPIO11		->
+	CFG_DISABLED,							// GPIO12		->
+	CFG_IN | PULL_UP,						// GPIO13		-> IRQ_PMU_L
+	CFG_OUT_1 | GRAPE_DRIVE_STR,					// GPIO14		-> GRAPE_FW_DNLD_EN_L
+	CFG_IN | PULL_UP,						// GPIO15		-> IRQ_CODEC_L
+
+/* Port  2 */
+	CFG_DISABLED,							// GPIO16		-> BOARD_ID_3
+	CFG_IN | PULL_DOWN,						// GPIO17		-> IRQ_GYRO_INT2
+	CFG_DISABLED,							// GPIO18		-> BOOT_CONFIG_0
+	CFG_OUT_0 | PM_KEEPACT_DRIVE_STR,				// GPIO19		-> PM_KEEPACT
+	CFG_DISABLED,							// GPIO20		->
+	CFG_DISABLED,							// GPIO21		->
+	CFG_OUT_0 | GRAPE_DRIVE_STR,					// GPIO22		-> RST_GRAPE_L
+	CFG_DISABLED,							// GPIO23		->
+
+/* Port  3 */
+	CFG_DISABLED,							// GPIO24		->
+	CFG_DISABLED,							// GPIO25		-> BOOT_CONFIG_1
+	CFG_IN | PULL_DOWN,						// GPIO26		-> FORCE_DFU
+	CFG_OUT_0 | DFU_STATUS_DRIVE_STR | PULL_DOWN,			// GPIO27		-> DFU_STATUS
+	CFG_DISABLED,							// GPIO28		-> BOOT_CONFIG_2
+	CFG_DISABLED,							// GPIO29		-> BOOT_CONFIG_3
+	CFG_DISABLED,							// GPIO30		->
+	CFG_DISABLED,							// GPIO31		->
+
+/* Port  4 */
+	CFG_DISABLED,							// GPIO32		->
+	CFG_IN | PULL_DOWN,						// GPIO33		-> IRQ_GYRO_INT1
+	CFG_IN | PULL_UP,						// GPIO34		-> IRQ_ALS_INT_L
+	CFG_IN | PULL_UP,						// GPIO35		-> IRQ_ACCEL_INT2_L
+	CFG_IN | PULL_UP,						// GPIO36		-> IRQ_ACCEL_INT1_L
+	CFG_DISABLED,							// EHCI_PORT_PWR[0]	-> AP_GPIO37_BRD_REV0
+	CFG_DISABLED,							// EHCI_PORT_PWR[1]	-> AP_GPIO38_BRD_REV1
+	CFG_DISABLED,							// EHCI_PORT_PWR[2]	-> AP_GPIO39_BRD_REV2
+
+/* Port  5 */
+	CFG_DISABLED,							// UART1_TXD		->
+	CFG_DISABLED,							// UART1_RXD		->
+	CFG_DISABLED,							// UART1_RTSN		->
+	CFG_DISABLED,							// UART1_CTSN		->
+	CFG_DISABLED,							// UART2_TXD		->
+	CFG_DISABLED,							// UART2_RXD		->
+	CFG_DISABLED,							// UART2_RTSN		->
+	CFG_DISABLED,							// UART2_CTSN		->
+
+/* Port  6 */
+	CFG_FUNC0 | BT_UART_DRIVE_STR,					// UART3_TXD		-> UART_3_TXD
+	CFG_FUNC0,							// UART3_RXD		-> UART_3_RXD
+	CFG_OUT_1 | BT_UART_DRIVE_STR,					// UART3_RTSN		-> UART_3_RTS_L
+	CFG_FUNC0,							// UART3_CTSN		-> UART_3_CTS_L
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C0_SDA		-> I2C0_SDA_1V8
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C0_SCL		-> I2C0_SCL_1V8
+	CFG_DISABLED,							// I2C1_SDA		-> I2C1_SDA_1V8
+	CFG_DISABLED,							// I2C1_SCL		-> I2C1_SCL_1V8
+
+/* Port  7 */
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP0_SDA		-> ISP_AP_0_SDA
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP0_SCL		-> ISP_AP_0_SCL
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP1_SDA		-> ISP_AP_1_SDA
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP1_SCL		-> ISP_AP_1_SCL
+	CFG_DISABLED,							// UART5_TXD/MIPI_VSYNC	->
+	CFG_DISABLED,							// TMR32_PWM0		->
+	CFG_DISABLED,							// TMR32_PWM1		->
+	CFG_DISABLED,							// TMR32_PWM2		->
+
+/* Port  8 */
+	CFG_DISABLED,							// SWI_DATA		->
+	CFG_FUNC0 | PULL_DOWN,						// DWI_DI		-> DWI_AP_DI
+	CFG_FUNC0 | DWI_DRIVE_STR,					// DWI_DO		-> DWI_AP_DO
+	CFG_FUNC0 | DWI_DRIVE_STR,					// DWI_CLK		-> DWI_AP_CLK
+	CFG_OUT_0 | PM_CAM_SHUTDOWN_DRIVE_STR,				// SENSOR0_RST		-> PM_REAR_CAM_SHUTDOWN_L
+	CFG_OUT_0 | CLK_CAM_DRIVE_STR,					// SENSOR0_CLK		-> CLK_CAM_RF
+	CFG_OUT_1 | PM_CAM_SHUTDOWN_DRIVE_STR,				// SENSOR1_RST		-> PM_FRONT_CAM_SHUTDOWN
+	CFG_OUT_0 | CLK_CAM_DRIVE_STR,					// SENSOR1_CLK		-> CLK_CAM_FF
+
+/* Port  9 */
+	CFG_DISABLED,							// ISP0_PRE_FLASH	->
+	CFG_DISABLED,							// ISP0_FLASH		->
+	CFG_DISABLED,							// ISP1_PRE_FLASH	->
+	CFG_DISABLED,							// ISP1_FLASH		->
+	CFG_FUNC0 | I2S_MCK_DRIVE_STR,					// I2S0_MCK		-> I2S_AP_0_MCK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_LRCK		-> I2S_AP_0_LRCK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_SCLK		-> I2S_AP_0_BCLK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_DOUT		-> I2S_AP_0_DOUT
+
+/* Port 10 */
+	CFG_FUNC0,							// I2S0_DIN		-> I2S_AP_0_DIN
+	CFG_DISABLED,							// I2S1_MCK		->
+	CFG_DISABLED,							// I2S1_LRCK		->
+	CFG_DISABLED,							// I2S1_SCLK		->
+	CFG_DISABLED,							// I2S1_DOUT		->
+	CFG_DISABLED,							// I2S1_DIN		->
+	CFG_DISABLED,							// I2S2_MCK		->
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_LRCK		-> I2S_AP_2_LRCK
+
+/* Port 11 */
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_BCLK		-> I2S_AP_2_BCLK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_DOUT		-> I2S_AP_2_DOUT
+	CFG_FUNC0,							// I2S2_DIN		-> I2S_AP_2_DIN
+	CFG_DISABLED,							// I2S2_MCK		->
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_LRCK		-> I2S_AP_3_LRCK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_BCLK		-> I2S_AP_3_BCLK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_DOUT		-> I2S_AP_3_DOUT
+	CFG_FUNC0,							// I2S3_DIN		-> I2S_AP_3_DIN
+
+/* Port 12 */
+	CFG_DISABLED,							// SPI0_SCLK		-> BOARD_ID_0_SPI_FLASH_CLK
+	CFG_DISABLED,							// SPI0_MOSI		-> BOARD_ID_1_SPI_FLASH_DIN
+	CFG_DISABLED,							// SPI0_MISO		-> BOARD_ID_2_SPI_FLASH_DOUT
+	CFG_DISABLED | PULL_UP,						// SPI0_SSIN		->
+	CFG_FUNC0 | SPI_DATA_DRIVE_STR,					// SPI1_SCLK		-> SPI_GRAPE_SCLK
+	CFG_FUNC0 | SPI_DATA_DRIVE_STR,					// SPI1_MOSI		-> SPI_GRAPE_MOSI
+	CFG_FUNC0,							// SPI1_MISO		-> SPI_GRAPE_MISO
+	CFG_OUT_1 | SPI_CS_DRIVE_STR,					// SPI1_SSIN		-> SPI_GRAPE_CS_L
+
+/* Port 13 */
+	CFG_DISABLED,							// SPI2_SCLK		->
+	CFG_DISABLED,							// SPI2_MOSI		->
+	CFG_DISABLED,							// SPI2_MISO		->
+	CFG_DISABLED,							// SPI2_SSIN		->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 14 */
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 15 */
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 16 */
+	CFG_OUT_0 | MLC_DRIVE_STR,					// UART4_TXD		-> RST_MLC_L
+	CFG_OUT_0 | MLC_DRIVE_STR,					// UART4_RXD		-> PM_MLC_PWR_EN
+	CFG_OUT_0 | VIDEO_AMP_EN_DRIVE_STR,				// UART4_RTSN		-> VIDEO_AMP_EN
+	CFG_IN | PULL_UP,						// UART4_CTSN		-> IRQ_GRAPE_HOST_INT_L
+	CFG_FUNC0 | SDIO_WL_DRIVE_STR | PULL_UP,			// SDIO0_DATA3		-> SDIO_WL_DATA<3>
+	CFG_FUNC0 | SDIO_WL_DRIVE_STR | PULL_UP,			// SDIO0_DATA2		-> SDIO_WL_DATA<2>
+	CFG_FUNC0 | SDIO_WL_DRIVE_STR | PULL_UP,			// SDIO0_DATA1		-> SDIO_WL_DATA<1>
+	CFG_FUNC0 | SDIO_WL_DRIVE_STR | PULL_UP,			// SDIO0_DATA0		-> SDIO_WL_DATA<0>
+
+/* Port 17 */
+	CFG_FUNC0 | SDIO_WL_DRIVE_STR | PULL_UP,			// SDIO0_CMD		-> SDIO_WL_CMD
+	CFG_FUNC0 | SDIO_WL_DRIVE_STR,					// SDIO0_CLK		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN3		-> F0CE3_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN2		-> F0CE2_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN1		-> F0CE1_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN0		-> F0CE0_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CLE		-> F0CLE
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_ALE		-> F0ALE
+
+/* Port 18 */
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_REN		-> F0RE_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_WEN		-> F0WE_L
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO7		-> F0AD<7>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO6		-> F0AD<6>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO5		-> F0AD<5>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO4		-> F0AD<4>
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 19 */
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 20 */
+	CFG_DISABLED | PULL_DOWN,					// FMI0_DQS		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO3		-> F0AD<3>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO2		-> F0AD<2>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO1		-> F0AD<1>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO0		-> F0AD<0>
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN3		-> F1CE3_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN2		-> F1CE2_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN1		-> F1CE1_L
+
+/* Port 21 */
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN0		-> F1CE0_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CLE		-> F1CLE
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_ALE		-> F1ALE
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_REN		-> F1RE_L
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_WEN		-> F1WE_L
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO7		-> F1AD<7>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO6		-> F1AD<6>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO5		-> F1AD<5>
+
+/* Port 22 */
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO4		-> F1AD<4>
+	CFG_DISABLED | PULL_DOWN,					// FMI1_DQS		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO3		-> F1AD<3>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO2		-> F1AD<2>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO1		-> F1AD<1>
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO0		-> F1AD<0>
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 23 */
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+
+/* Port 24 */
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C2_SDA		-> I2C2_SDA_1V8
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C2_SCL		-> I2C2_SCL_1V8
+	CFG_FUNC0 | UART_0_DRIVE_STR,					// UART0_TXD		-> UART_0_TXD
+	CFG_FUNC0 | UART_0_DRIVE_STR,					// UART0_RXD		-> UART_0_RXD
+	CFG_FUNC0 | UART_5_DRIVE_STR,					// UART5_RTXD		-> UART_5_RTXD
+	CFG_FUNC0,							// DP_HPD		-> DP_AP_HPD
+	CFG_DISABLED,							// TST_CLKOUT		-> TP_AP_TST_CLKOUT
+	CFG_DISABLED,							// TST_STPCLK		->
+
+/* Port 25 */
+	CFG_FUNC0 | RST_PMU_IN_DRIVE_STR,				// WDOG			-> RST_PMU_IN
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+};
+
+#undef AUD_SPKRAMP_MUTE_L_DRIVE_STR
+#undef DFU_STATUS_DRIVE_STR
+#undef DWI_DRIVE_STR
+#undef FMI_DRIVE_STR
+#undef GRAPE_DRIVE_STR
+#undef MLC_DRIVE_STR
+#undef PM_BT_WAKE_DRIVE_STR
+#undef PM_CAM_SHUTDOWN_DRIVE_STR
+#undef CLK_CAM_DRIVE_STR
+#undef PM_KEEPACT_DRIVE_STR
+#undef RST_PMU_IN_DRIVE_STR
+#undef SDIO_WL_DRIVE_STR
+#undef VIDEO_AMP_EN_DRIVE_STR
+#undef I2C_DRIVE_STR
+#undef UART_5_DRIVE_STR
+#undef I2S_DRIVE_STR
+#undef I2S_MCK_DRIVE_STR
+#undef SPI_CS_DRIVE_STR
+#undef SPI_DATA_DRIVE_STR
+#undef BT_UART_DRIVE_STR
+#undef UART_0_DRIVE_STR
+
+#undef FMI_SLEW_RATE

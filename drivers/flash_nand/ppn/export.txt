@@ -1,0 +1,12 @@
+_WMR_Open
+_WMR_PPN_GetFTL
+_WMR_PPN_GetFPart
+_WMR_Start
+_WMR_PPN_CtrlIO
+_ppn_init
+_ppnMiscSingleOperation
+_ppnMiscFillDevStruct
+_ppnMiscGetCEFromBank
+_ppnMiscSingleLbaRead
+_ppnMiscConvertToPPNPageAddress
+_ppnMiscConvertPhysicalAddressToCauBlockPage

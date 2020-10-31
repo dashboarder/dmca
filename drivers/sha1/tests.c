@@ -1,0 +1,41 @@
+#include <unittest.h>
+#include <drivers/sha1.h>
+#include <string.h>
+
+struct sha1_test {
+	const char *data;
+	uint32_t len;
+	uint8_t expected[20];
+};
+
+static struct sha1_test sha1_tests[] = {
+	{ "", 0, { 0xda, 0x39, 0xa3, 0xee, 0x5e, 0x6b, 0x4b, 0x0d, 0x32, 0x55, 0xbf, 0xef, 0x95, 0x60, 0x18, 0x90, 0xaf, 0xd8, 0x07, 0x09 } },
+
+	{ "abc", 3, { 0xa9, 0x99, 0x3e, 0x36, 0x47, 0x06, 0x81, 0x6a, 0xba, 0x3e, 0x25, 0x71, 0x78, 0x50, 0xc2, 0x6c, 0x9c, 0xd0, 0xd8, 0x9d } },
+
+	{ "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq", 56, { 0x84, 0x98, 0x3e, 0x44, 0x1c, 0x3b, 0xd2, 0x6e, 0xba, 0xae, 0x4a, 0xa1, 0xf9, 0x51, 0x29, 0xe5, 0xe5, 0x46, 0x70, 0xf1 } },
+
+};
+
+void test_sha1(uintptr_t param)
+{
+	for (unsigned i = 0; i < sizeof sha1_tests / sizeof(sha1_tests[0]); i++) {
+		struct sha1_test *test = &sha1_tests[i];
+
+		uint8_t calculated[20];
+
+		sha1_calculate((void *)test->data, test->len, (void *)calculated);
+
+		TEST_ASSERT_MEM_EQ(calculated, test->expected, sizeof(test->expected));
+	}
+}
+
+struct test_suite sha1_suite = {
+	.name = "sha1",
+	.test_cases = {
+		{ "sha1", test_sha1, 0, "Tests the sha1_calculate function" },
+		TEST_CASE_LAST
+	}
+};
+
+TEST_SUITE(sha1_suite);

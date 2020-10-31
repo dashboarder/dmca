@@ -1,0 +1,79 @@
+/*
+ * Copyright (C) 2011 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+#ifndef __PLATFORM_PINCONFIG_H
+#define __PLATFORM_PINCONFIG_H
+
+/* Default S5L8747X SoC Pin Configuration */
+
+static const struct gpio_default_config gpio_default_config[GPIO_GROUP_COUNT] = {
+/* P0  */  PINCONFIG(
+		PCON_DISABLE,	NO_PUPDN,	// I2S0_MCK ->
+		PCON_DISABLE,	NO_PUPDN,	// I2S0_LRCK ->
+		PCON_DISABLE,	NO_PUPDN,	// I2S0_BCK ->
+		PCON_DISABLE,	NO_PUPDN,	// I2S0_DOUT ->
+		PCON_DISABLE,	NO_PUPDN,	// I2S0_DIN ->
+		PCON_DISABLE,	NO_PUPDN,	// UART0_RXD ->
+		PCON_DISABLE,	NO_PUPDN,	// UART0_TXD ->
+		PCON_DISABLE,	NO_PUPDN	// UART0_NRTS ->
+	       ),
+/* P1  */  PINCONFIG(
+		PCON_DISABLE,	NO_PUPDN,	// UART0_NCTS ->
+		PCON_DISABLE,	NO_PUPDN,	// I2C0_SCL ->
+		PCON_DISABLE,	NO_PUPDN,	// I2C0_SDA ->
+		PCON_DISABLE,	PUP,		// SPI0_CEN ->		SPI0_CS
+		PCON_DISABLE,	PDN,		// SPI0_CLK ->		SPI0_CLK
+		PCON_DISABLE,	NO_PUPDN,	// SPI0_MOSI ->		SPI0_MOSI
+		PCON_DISABLE,	NO_PUPDN,	// SPI0_MISO ->		SPI0_MISO
+		PCON_DISABLE,	NO_PUPDN	// - ->
+	       ),
+/* P2  */  PINCONFIG(
+		PCON_DISABLE,	NO_PUPDN,	// GPIO0 ->
+		PCON_DISABLE,	NO_PUPDN,	// GPIO1 ->		BOOT_CONFIG[0]
+		PCON_DISABLE,	NO_PUPDN,	// GPIO2 ->		BOOT_CONFIG[1]
+		PCON_DISABLE,	NO_PUPDN,	// GPIO3 ->		BOARD_ID[1]
+		PCON_DISABLE,	NO_PUPDN,	// GPIO4 ->		BOARD_ID[2]
+		PCON_DISABLE,	NO_PUPDN,	// GPIO5 ->		BOARD_ID[3]
+		PCON_DISABLE,	NO_PUPDN,	// GPIO6 ->		BOARD_ID[4]
+		PCON_DISABLE,	NO_PUPDN	// GPIO7 ->
+	       ),
+/* P3  */  PINCONFIG(
+		PCON_DISABLE,	NO_PUPDN,	// CLK0_OUT ->
+		PCON_DISABLE,	NO_PUPDN,	// CLK1_OUT ->
+		PCON_DISABLE,	NO_PUPDN,	// HDMI_HPD ->
+		PCON_DISABLE,	NO_PUPDN,	// HDMI_CEC ->
+		PCON_IN,	PDN,		// FORCE_DFU ->		FORCE_DFU
+		PCON_DISABLE,	PDN,		// DFU_STATUS ->	DFU_STATUS
+		PCON_DISABLE,	NO_PUPDN,	// I2C1_SCL ->
+		PCON_DISABLE,	NO_PUPDN	// I2C1_SDA ->
+	       ),
+/* P4  */  PINCONFIG(
+		PCON_DISABLE,	NO_PUPDN,	// UART2_RXD ->
+		PCON_DISABLE,	NO_PUPDN,	// UART2_TXD ->
+		PCON_DISABLE,	NO_PUPDN,	// UART2_NRTS ->
+		PCON_DISABLE,	NO_PUPDN,	// UART2_NCTS ->
+		PCON_DISABLE,	NO_PUPDN,	// SPI1_CEN ->
+		PCON_DISABLE,	NO_PUPDN,	// SPI1_CLK ->
+		PCON_DISABLE,	NO_PUPDN,	// SPI1_MOSI ->
+		PCON_DISABLE,	NO_PUPDN	// SPI1_MISO ->
+	       ),
+/* P5  */  PINCONFIG(
+		PCON_DISABLE,	NO_PUPDN,	// UART1_RXD ->
+		PCON_DISABLE,	NO_PUPDN,	// UART1_TXD ->
+		PCON_DISABLE,	NO_PUPDN,	// UART1_NRTS ->
+		PCON_DISABLE,	NO_PUPDN,	// UART1_NCTS ->
+		PCON_DISABLE,	NO_PUPDN,	// VGA_VDEN ->
+		PCON_DISABLE,	NO_PUPDN,	// VGA_HSYNC ->
+		PCON_DISABLE,	NO_PUPDN,	// VGA_VSYNC ->
+		PCON_DISABLE,	NO_PUPDN	// - ->
+	       ),
+};
+
+#endif /* ! __PLATFORM_PINCONFIG_H */

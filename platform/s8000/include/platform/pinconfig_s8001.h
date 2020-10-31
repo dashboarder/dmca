@@ -1,0 +1,341 @@
+/*
+ * Copyright (C) 2014 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+
+#ifndef __PLATFORM_PINCONFIG_H
+#define __PLATFORM_PINCONFIG_H
+
+static const uint32_t gpio_default_cfg[GPIO_GROUP_COUNT * GPIOPADPINS] = {
+
+/* Port  0 */
+	CFG_DISABLED | DRIVE_S4,							//   0 : SPI1_SCLK		->
+	CFG_DISABLED | DRIVE_S4,							//   1 : SPI1_MOSI		->
+	CFG_DISABLED | DRIVE_S4,							//   2 : SPI1_MISO		->
+	CFG_DISABLED | DRIVE_S4,							//   3 : SPI1_SSIN		->
+	CFG_DISABLED | DRIVE_S4,							//   4 : ISP_I2C0_SDA		->
+	CFG_DISABLED | DRIVE_S4,							//   5 : ISP_I2C0_SCL		->
+	CFG_DISABLED | DRIVE_S4,							//   6 : ISP_I2C0_SDA		->
+	CFG_DISABLED | DRIVE_S4,							//   7 : ISP_I2C0_SCL		->
+
+/* Port  1 */
+	CFG_DISABLED | DRIVE_S4,							//   8 : SENSOR0_ISTRB		->
+	CFG_DISABLED | DRIVE_S4,							//   9 : SENSOR0_RST		->
+	CFG_DISABLED | DRIVE_S4,							//  10 : SENSOR0_CLK		->
+	CFG_DISABLED | DRIVE_S4,							//  11 : SENSOR0_XSHUTDOWN	->
+	CFG_DISABLED | DRIVE_S4,							//  12 : SENSOR1_ISTRB		->
+	CFG_DISABLED | DRIVE_S4,							//  13 : SENSOR1_RST		->
+	CFG_DISABLED | DRIVE_S4,							//  14 : SENSOR1_CLK		->
+	CFG_DISABLED | DRIVE_S4,							//  15 : SENSOR1_XSHUTDOWN	->
+
+/* Port  2 */
+	CFG_DISABLED | DRIVE_S4,							//  16 : GPIO[16]		-> BOARD_ID[3]
+	CFG_DISABLED | DRIVE_S4,							//  17 : GPIO[17]		-> 
+	CFG_DISABLED | DRIVE_S4,							//  18 : GPIO[18]		-> BOOT_CONFIG[0]
+	CFG_DISABLED | DRIVE_S4,							//  19 : I2S1_MCK		->
+	CFG_DISABLED | DRIVE_S4,							//  20 : I2S1_BLCK		->
+	CFG_DISABLED | DRIVE_S4,							//  21 : I2S1_LRCK		->
+	CFG_DISABLED | DRIVE_S4,							//  22 : I2S1_DIN		->
+	CFG_DISABLED | DRIVE_S4,							//  23 : I2S1_DOUT		->
+
+/* Port  3 */
+	CFG_DISABLED | DRIVE_S4,							//  24 : NAND_SYS_CLK		-> NAND_SYS_CLK
+	CFG_DISABLED | DRIVE_S4,							//  25 : S3E0_RESETN		-> NAND_RESET
+	CFG_DISABLED | DRIVE_S4,							//  26 : S3E1_RESETN		->
+	CFG_DISABLED | DRIVE_S4,							//  27 : UART1_TXD		->
+	CFG_DISABLED | DRIVE_S4,							//  28 : UART1_RXD		->
+	CFG_DISABLED | DRIVE_S4,							//  29 : UART1_RTSN		->
+	CFG_DISABLED | DRIVE_S4,							//  30 : UART1_CTSN		->
+	CFG_DISABLED | DRIVE_S4,							//  31 : GPIO43			->
+
+/* Port  4 */
+	CFG_DISABLED | DRIVE_S4,							//  32 : I2S0_BCLK		->
+	CFG_DISABLED | DRIVE_S4,							//  33 : I2S0_LRCK		->
+	CFG_DISABLED | DRIVE_S4,							//  34 : I2S0_DIN		->
+	CFG_DISABLED | DRIVE_S4,							//  35 : I2S0_DOUT		->
+	CFG_DISABLED | DRIVE_S4,							//  36 : I2S0_MCK		->
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+
+/* Port  5 */
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+
+/* Port  6 */
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,
+
+/* Port  7 */
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+
+/* Port  8 */
+	CFG_DISABLED | DRIVE_S4,							//  64 : I2S4_MCK		->
+	CFG_DISABLED | DRIVE_S4,							//  65 : I2S4_BCLK		->
+	CFG_DISABLED | DRIVE_S4,							//  66 : I2S4_LRCK		->
+	CFG_DISABLED | DRIVE_S4,							//  67 : I2S4_DIN		->
+	CFG_DISABLED | DRIVE_S4,							//  68 : I2S4_DOUT		->
+	CFG_DISABLED | DRIVE_S4,							//  69 : I2S2_MCK		->
+	CFG_DISABLED | DRIVE_S4,							//  70 : I2S2_BCLK		->
+	CFG_DISABLED | DRIVE_S4,							//  71 : I2S2_LRCK		->
+
+/* Port  9 */
+	CFG_DISABLED | DRIVE_S4,							//  72 : I2S2_DIN		->
+	CFG_DISABLED | DRIVE_S4,							//  73 : I2S2_DOUT		->
+	CFG_DISABLED | DRIVE_S4,							//  74 : GPIO[0]		->
+	CFG_DISABLED | DRIVE_S4,							//  75 : GPIO[1]		->
+	CFG_DISABLED | DRIVE_S4,							//  76 : GPIO[2]		->
+	CFG_DISABLED | DRIVE_S4,							//  77 : GPIO[3]		->
+	CFG_DISABLED | DRIVE_S4,							//  78 : GPIO[4]		->
+	CFG_DISABLED | DRIVE_S4,							//  79 : GPIO[5]		->
+
+/* Port 10 */
+	CFG_DISABLED | DRIVE_S4,							//  80 : GPIO[6]		-> 
+	CFG_DISABLED | DRIVE_S4,							//  81 : GPIO[7]		->
+	CFG_DISABLED | DRIVE_S4,							//  82 : GPIO[8]		-> 
+	CFG_DISABLED | DRIVE_S4,							//  83 : GPIO[9]		->
+	CFG_DISABLED | DRIVE_S4,							//  84 : GPIO[10]		->
+	CFG_DISABLED | DRIVE_S4,							//  85 : GPIO[11]		->
+	CFG_DISABLED | DRIVE_S4,							//  86 : GPIO[12]		->
+	CFG_DISABLED | DRIVE_S4,							//  87 : GPIO[13]		->
+
+/* Port 11 */
+	CFG_DISABLED | DRIVE_S4,							//  88 : GPIO[14]		->
+	CFG_DISABLED | DRIVE_S4,							//  89 : GPIO[15]		->
+	CFG_DISABLED | DRIVE_S4,							//  90 : UART3_TXD		->
+	CFG_DISABLED | DRIVE_S4,							//  91 : UART3_RXD		->
+	CFG_DISABLED | DRIVE_S4,							//  92 : UART3_RTSN		->
+	CFG_DISABLED | DRIVE_S4,							//  93 : UART3_CTSN		->
+	CFG_FUNC0 | DRIVE_S4,							//  94 : SPI0_SCLK		-> SPI0_SCLK/BOARD_ID[0]
+	CFG_FUNC0 | DRIVE_S4,							//  95 : SPI0_MOSI		-> SPI0_MOSI/BOARD_ID[1]
+
+/* Port 12 */
+	CFG_FUNC0 | DRIVE_S4,							//  96 : SPI0_MISO		-> SPI0_MISO/BOARD_ID[2]
+	CFG_OUT_1 | DRIVE_S4,							//  97 : SPI0_SSIN		-> SPI0_CS
+	CFG_DISABLED | DRIVE_S4,							//  98 : PCIE_PERST0_N		-> NAND_PERST
+	CFG_DISABLED | DRIVE_S4,							//  99 : PCIE_PERST1_N		->
+	CFG_DISABLED | DRIVE_S4,							// 100 : PCIE_PERST2_N		->
+	CFG_DISABLED | DRIVE_S4,							// 101 : PCIE_PERST3_N		->
+	CFG_DISABLED | DRIVE_S4,							// 102 : PCIE_PERST4_N		->
+	CFG_DISABLED | DRIVE_S4,							// 103 : PCIE_PERST5_N		-> 
+
+/* Port 13 */
+	CFG_DISABLED | INPUT_SCHMITT | SLOW_SLEW | DRIVE_S4,			// 104 : PCIE_CLKREQ0_N		-> NAND_CLKREQ
+	CFG_DISABLED | DRIVE_S4,							// 105 : PCIE_CLKREQ1_N		-> 
+	CFG_DISABLED | DRIVE_S4,							// 106 : PCIE_CLKREQ2_N		-> 
+	CFG_DISABLED | DRIVE_S4,							// 107 : PCIE_CLKREQ3_N		->
+	CFG_DISABLED | DRIVE_S4,							// 108 : PCIE_CLKREQ4_N		->
+	CFG_DISABLED | DRIVE_S4,							// 109 : PCIE_CLKREQ5_N		->
+	CFG_DISABLED | DRIVE_S4,							// 110 : UART2_TXD		->
+	CFG_DISABLED | DRIVE_S4,							// 111 : UART2_RXD		->
+
+/* Port 14 */
+	CFG_DISABLED | DRIVE_S4,							// 112 : UART2_RTSN		->
+	CFG_DISABLED | DRIVE_S4,							// 113 : UART2_CTSN		->
+	CFG_DISABLED | DRIVE_S4,							// 114 : I2C3_SDA		->
+	CFG_DISABLED | DRIVE_S4,							// 115 : I2C3_SCL		->
+	CFG_DISABLED | DRIVE_S4,							// 116 : GPIO[44]		->
+	CFG_DISABLED | DRIVE_S4,							// 117 : GPIO[45]		->
+	CFG_DISABLED | DRIVE_S4,							// 118 : GPIO[46]		->
+	CFG_DISABLED | DRIVE_S4,							// 119 : GPIO[47]		->
+
+/* Port 15 */
+	CFG_DISABLED | DRIVE_S4,							// 120 : GPIO[48]		->
+	CFG_DISABLED | DRIVE_S4,							// 121 : GPIO[49]		->
+	CFG_IN | DRIVE_S4,								// 122 : MENU_KEY_L		-> REQUEST_DFU2
+	CFG_IN | DRIVE_S4,						        	// 123 : HOLD_KEY_L		-> REQUEST_DFU1
+	CFG_DISABLED | DRIVE_S4,					                // 124 : SKEY_L			->
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+
+/* Port 16 */
+	CFG_DISABLED | DRIVE_S4,							// 128 : SWD_TMS2		->
+	CFG_DISABLED | DRIVE_S4,							// 129 : SWD_TMS3		->
+	CFG_DISABLED | DRIVE_S4,							// 130 : UART5_RTXD		->
+	CFG_DISABLED | DRIVE_S4,							// 131 : I2C2_SDA		->
+	CFG_DISABLED | DRIVE_S4,							// 132 : I2C2_SCL		->
+	CFG_DISABLED | DRIVE_S4,							// 133 : UART4_TXD		->
+	CFG_DISABLED | DRIVE_S4,							// 134 : UART4_RXD		-> 
+	CFG_DISABLED | DRIVE_S4,							// 135 : UART4_RTSN		-> 
+
+/* Port 17 */
+	CFG_DISABLED | DRIVE_S4,							// 136 : UART4_CTSN		->
+	CFG_DISABLED | DRIVE_S4,							// 137 : UART7_TXD		->
+	CFG_DISABLED | DRIVE_S4,							// 138 : UART7_RXD		->
+	CFG_DISABLED | DRIVE_S4,							// 139 : CLK32K_OUT		->
+	CFG_DISABLED | DRIVE_S4,							// 140 : DP_WAKEUP0		->
+	CFG_DISABLED | DRIVE_S4,							// 141 : DP_WAKEUP1		->
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+
+/* Port 18 */
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+	CFG_DISABLED | DRIVE_S4,							
+
+/* Port 19 */
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+
+/* Port 20 */
+	CFG_DISABLED | DRIVE_S4,							// 160 : SPI2_SCLK		-> 
+	CFG_DISABLED | DRIVE_S4,							// 161 : SPI2_MOSI		->
+	CFG_DISABLED | DRIVE_S4,							// 162 : SPI2_MISO		->
+	CFG_DISABLED | DRIVE_S4,							// 163 : SPI2_SSIN		->
+	CFG_DISABLED | DRIVE_S4,							// 164 : I2C0_SDA		-> 
+	CFG_DISABLED | DRIVE_S4,							// 165 : I2C0_SCL		->
+	CFG_DISABLED | DRIVE_S4,							// 166 : SPI3_SCLK		->
+	CFG_DISABLED | DRIVE_S4,							// 167 : SPI3_MOSI		->
+
+/* Port 21 */
+	CFG_DISABLED | DRIVE_S4,							// 168 : SPI3_MISO		->
+	CFG_DISABLED | DRIVE_S4,							// 169 : SPI3_SSIN		->
+	CFG_DISABLED | DRIVE_S4,							// 170 : UART0_TXD		->
+	CFG_DISABLED | DRIVE_S4,							// 171 : UART0_RXD		->
+	CFG_DISABLED | DRIVE_S4,							// 172 : UART6_TXD		->
+	CFG_DISABLED | DRIVE_S4,							// 173 : UART6_RXD		->
+	CFG_DISABLED | DRIVE_S4,							// 174 : TMR32_PWM0		->
+	CFG_DISABLED | DRIVE_S4,							// 175 : TMR32_PWM1		->
+
+/* Port 22 */
+	CFG_DISABLED | DRIVE_S4,							// 176 : TMR32_PWM2		->
+	CFG_DISABLED | DRIVE_S4,							// 177 : I2C1_SDA		->
+	CFG_DISABLED | DRIVE_S4,							// 178 : I2C1_SCL		->
+	CFG_DISABLED | DRIVE_S4,							// 179 : GPIO[19]		->
+	CFG_DISABLED | DRIVE_S4,							// 180 : GPIO[20]		->
+	CFG_DISABLED | DRIVE_S4,							// 181 : GPIO[21]		->
+	CFG_DISABLED | DRIVE_S4,							// 182 : GPIO[22]		->
+	CFG_DISABLED | DRIVE_S4,							// 183 : GPIO[23]		->
+
+/* Port 23 */
+	CFG_DISABLED | DRIVE_S4,							// 184 : GPIO[24]		-> 
+	CFG_DISABLED | DRIVE_S4,							// 185 : GPIO[25]		-> BOOT_CONFIG[1]
+	CFG_IN | PULL_DOWN | DRIVE_S4,						// 186 : GPIO[26]		-> FORCE_DFU
+	CFG_DISABLED | DRIVE_S4,							// 187 : PSPI_MOSI		->
+	CFG_DISABLED | DRIVE_S4,							// 188 : DWI_DO			->
+	CFG_DISABLED | DRIVE_S4,							// 189 : PMGR_MISO		->
+	CFG_DISABLED | DRIVE_S4,							// 190 : PMGR_SCLK0		->
+	CFG_DISABLED | DRIVE_S4,							// 191 : PMGR_SSCLK1		->
+
+/* Port 24 */
+	CFG_DISABLED | DRIVE_S4,							// 192 : DROOP			->
+	CFG_DISABLED | DRIVE_S4,							// 193 : SOCHOT1		->
+	CFG_DISABLED | DRIVE_S4,							// 194 : EDP_HPD0		->
+	CFG_DISABLED | DRIVE_S4,							// 195 : EDP_HPD1		->
+	CFG_DISABLED | DRIVE_S4,							// 196 : I2S3_MCK		-> 
+	CFG_DISABLED | DRIVE_S4,							// 197 : I2S3_BCLK		-> 
+	CFG_DISABLED | DRIVE_S4,							// 198 : I2S3_LRCK		->
+	CFG_DISABLED | DRIVE_S4,							// 199 : I2S3_DOUT		->
+	
+/* Port 25 */
+	CFG_DISABLED | DRIVE_S4,							// 200 : I2S3_DIN		->
+	CFG_DISABLED | PULL_DOWN | DRIVE_S4,					// 201 : GPIO[27]		-> DFU_STATUS
+	CFG_DISABLED | DRIVE_S4,							// 202 : GPIO[28]		-> BOOT_CONFIG[2]
+	CFG_DISABLED | DRIVE_S4,							// 203 : GPIO[29]		-> BOARD_ID[4]
+	CFG_DISABLED | DRIVE_S4,							// 204 : GPIO[30]		-> 
+	CFG_DISABLED | DRIVE_S4,							// 205 : GPIO[31]		-> 
+	CFG_DISABLED | DRIVE_S4,							// 206 : GPIO[32]		->
+	CFG_DISABLED | DRIVE_S4,							// 207 : GPIO[33]		->
+		
+/* Port 26 */
+	CFG_DISABLED | DRIVE_S4,							// 208 : GPIO[34]		->
+	CFG_DISABLED | DRIVE_S4,							// 209 : GPIO[35]		->
+	CFG_DISABLED | DRIVE_S4,							// 210 : GPIO[36]		->
+	CFG_DISABLED | DRIVE_S4,							// 211 : GPIO[37]		->
+	CFG_DISABLED | DRIVE_S4,							// 212 : GPIO[38]		-> 
+	CFG_DISABLED | DRIVE_S4,							// 213 : GPIO[39]		-> 
+	CFG_DISABLED | DRIVE_S4,							// 214 : GPIO[40]		->
+	CFG_DISABLED | DRIVE_S4,							// 215 : GPIO[41]		->
+	
+/* Port 27 */
+	CFG_DISABLED | DRIVE_S4,							// 216 : GPIO[42]		->
+	CFG_DISABLED | DRIVE_S4,							// 217 : TST_CLKOUT		->
+	CFG_DISABLED | DRIVE_S4,							// 218 : GPU_TRIGGER1		->
+	CFG_DISABLED | DRIVE_S4,							// 219 : GPU_TRIGGER2		->
+	CFG_DISABLED | DRIVE_S4,	
+	CFG_DISABLED | DRIVE_S4,	
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+};
+
+static const uint32_t gpio_1_default_cfg[GPIO_1_GROUP_COUNT * GPIOPADPINS] = {
+
+/* Port  0 */
+	CFG_DISABLED | DRIVE_S4,							//   0 : AOP_SPI_SCLK		->
+	CFG_DISABLED | DRIVE_S4,							//   1 : AOP_SPI_MOSI		->
+	CFG_DISABLED | DRIVE_S4,							//   2 : AOP_SPI_MISO		->
+	CFG_DISABLED | DRIVE_S4,							//   3 : AOP_UART1_TXD		->
+	CFG_DISABLED | DRIVE_S4,							//   4 : AOP_UART1_RXD		->
+	CFG_DISABLED | DRIVE_S4,							//   5 : AOP_UART0_TXD		->
+	CFG_DISABLED | DRIVE_S4,							//   6 : AOP_UART0_RXD		->
+	CFG_DISABLED | DRIVE_S4,							//   7 : AOP_UART2_TXD		->
+
+/* Port  1 */
+	CFG_DISABLED | DRIVE_S4,							//   8 : AOP_UART2_RXD		->
+	CFG_DISABLED | DRIVE_S4,							//   9 : AOP_I2CM_SDA		->
+	CFG_DISABLED | DRIVE_S4,							//  10 : AOP_I2CM_SCL		->
+	CFG_DISABLED | DRIVE_S4,							//  11 : AOP_FUNC[0]		->
+	CFG_DISABLED | DRIVE_S4,							//  12 : AOP_FUNC[1]		->
+	CFG_DISABLED | DRIVE_S4,							//  13 : AOP_FUNC[2]		->
+	CFG_DISABLED | DRIVE_S4,							//  14 : AOP_FUNC[3]		->
+	CFG_DISABLED | DRIVE_S4,							//  15 : AOP_FUNC[4]		->
+
+/* Port  2 */
+	CFG_DISABLED | DRIVE_S4,							//  16 : AOP_FUNC[5]		->
+	CFG_DISABLED | DRIVE_S4,							//  17 : AOP_FUNC[6]		->
+	CFG_DISABLED | DRIVE_S4,							//  18 : AOP_FUNC[7]		->
+	CFG_DISABLED | DRIVE_S4,							//  19 : AOP_FUNC[8]		->
+	CFG_DISABLED | DRIVE_S4,							//  20 : AOP_FUNC[9]		->
+	CFG_DISABLED | DRIVE_S4,							//  21 : AOP_SWD_TCK_OUT	->
+	CFG_DISABLED | DRIVE_S4,							//  22 : AOP_SWD_TMS0		->
+	CFG_DISABLED | DRIVE_S4,							//  23 : AOP_SWD_TMS1		->
+
+/* Port  3 */
+	CFG_DISABLED | DRIVE_S4,							//  24 : AOP_I2S_MCK		->
+	CFG_DISABLED | DRIVE_S4,							//  25 : AOP_I2S_BCLK		->
+	CFG_DISABLED | DRIVE_S4,							//  26 : AOP_I2S_LRCK		->
+	CFG_DISABLED | DRIVE_S4,							//  27 : AOP_I2S_DIN		->
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+	CFG_DISABLED | DRIVE_S4,
+};
+
+#endif /* ! __PLATFORM_PINCONFIG_H */

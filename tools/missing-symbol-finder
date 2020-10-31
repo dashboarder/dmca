@@ -1,0 +1,102 @@
+#!/usr/bin/tclsh
+#########################################################################################
+# Parse output from ld_classic that complains about missing symbols and look them
+# up in the named object file
+#
+
+proc parse_line {line} {
+
+    global last_fname
+
+    set toks [split $line]
+    if { ![regexp "ld_classic:" [lindex $toks 0]] } {
+	puts "ignoring garbage '$line'"
+	return
+    }
+
+    set fname [lindex $toks 1]
+    set relent [lindex $toks 7]
+    set sect [lindex $toks 10]
+
+    # strip archive member name if present
+    set ppos [string last "(" $fname];
+    if {$ppos != -1} {
+	set fname [string range $fname 0 [expr $ppos - 1]];
+    }
+
+    #puts "% $fname % $relent % $sect"
+
+    set relname [find_sym $fname $relent $sect]
+
+    if {$last_fname != $fname} {
+	puts "$fname:"
+	set last_fname $fname
+    }
+
+    puts "  $relname"
+}
+
+proc find_sym {fname relent sect} {
+
+    global reloc_$fname
+
+    if {![array exists reloc_$fname]} {
+	get_relocs $fname
+    }
+    upvar 0 reloc_$fname relocs
+    if {[array names relocs -exact $sect:$relent] == ""} {
+	puts "Don't know reloc $relent for $fname"
+	exit 1
+    }
+    return $relocs($sect:$relent)
+}
+
+proc get_relocs {fname} {
+    
+    global reloc_$fname
+    upvar 0 reloc_$fname relocs
+
+    set body [exec otool -rv $fname]
+    set lines [split $body "\n"]
+
+    set curr_sect "none"
+
+    foreach line $lines {
+
+	set toks [split [collapse $line]]
+
+	if {[lindex $toks 0] == "Relocation"} {
+	    set sect [lindex $toks 2]
+	    set count [lindex $toks 3]
+	    set curr_sect $sect
+	    set counter 0
+	    continue
+	}
+
+	if {[string is xdigit [lindex $toks 0]]} {
+	    if {[llength $toks] == 7} {
+		set relocs($curr_sect:$counter) [lindex $toks 6]
+	    }
+	    incr counter
+	}
+    } 
+}
+
+proc collapse {str} {
+
+    set before ""
+    set after $str
+
+    while {$before != $after} {
+	set before $after
+
+	set after [string map [list "  " " "] $before]
+    }
+    return $after
+}
+
+# Suck from standard input
+set last_fname ""
+while {[gets stdin line] > 0} {
+    parse_line $line
+}

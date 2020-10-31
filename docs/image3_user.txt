@@ -1,0 +1,169 @@
+Image3 User Library
+===================
+
+The Image3 library provides convenient functions for creating and referencing Image3 format objects.
+
+
+Overview
+--------
+An Image3 object is a simple collection of tag/data tuples, with optional support for signing of
+images.
+
+Image3 objects are referenced by an Image3ObjectHandle, which can be obtained either by
+instantiating a new object, or by creating one from a buffer which may have been loaded from some
+other source.
+
+Objects may be mutable, if the library was built with IMAGE3_CREATOR defined and they have not been
+signed.  Signed objects are never mutable (for obvious reasons).
+
+
+Signing
+-------
+When an Image3 object is signed, two tags are added (SHSH and CERT) by the signing process which
+contain the signed hash and certificate chain respectively.  These tags are always the last two to
+be added, and once an image is signed (as part of the finalisation process) it cannot have further
+tags added.
+
+Signature verification may discover a nested Image3 object in the certificate chain.  This nested
+image handle can be accessed by the user and treated as an image in its own right, but is otherwise
+not managed by the library.
+
+
+Creating an Object
+------------------
+
+extern int
+image3InstantiateNew(
+	Image3ObjectHandle *newHandle,
+	size_t initialAllocation);
+
+Creates an object, and allows an initial allocation to be specified for efficiency purposes.
+
+extern int
+image3InstantiateFromBuffer(
+	Image3ObjectHandle *newHandle,
+	const void *fromBuffer,
+	const size_t bufferSize,
+	bool copyBuffer);
+
+Instantiates an object from a buffer.  This can be used when reading a finalised but unsigned image
+if you wish to further update or sign the image.  If copyBuffer is set, or if the image will be
+mutable, the image buffer is copied; otherwise it continues to reference the source buffer.
+
+extern int
+image3SetTagStructure(
+	const Image3ObjectHandle withHandle,
+	u_int32_t withTag,
+	const void *withValue,
+	size_t withSize,
+	int withAlignment);
+
+This is the workhorse tag/data insertion interface.  It appends a tag to the object's buffer with
+the supplied tag value, and populates the tag data with the value supplied.  If the withAlignment
+argument is nonzero, it specifies the alignment within the object that the data buffer will have.
+
+Note that this implies that the object itself will always be loaded at an address that is a common
+multiple of all of the alignment values in use within the object.
+
+extern int
+image3SetTagSignedNumber(
+	const Image3ObjectHandle withHandle,
+	u_int32_t withTag,
+	int64_t withValue);
+	
+extern int
+image3SetTagUnsignedNumber(
+	const Image3ObjectHandle withHandle,
+	u_int32_t withTag,
+	u_int64_t withValue);
+	
+extern int
+image3SetTagString(
+	const Image3ObjectHandle withHandle,
+	u_int32_t withTag,
+	char *withValue);
+
+Wrappers around image3SetTagStructure to simplify handling of simple data types.
+
+extern int
+image3Finalize(
+	const Image3ObjectHandle withHandle,
+	void **objectBuffer,
+	size_t *objectSize,
+	bool signImage);
+
+Updates the image's internal summary fields and obtains a pointer/size value for the image buffer
+that can be written to a file, etc.  Note that if signImage is set, the image will be signed via the
+PKI interfaces, at which point it will become immutable.
+
+
+Working with an Object
+----------------------
+
+extern int
+image3InstantiateFromBuffer(
+	Image3ObjectHandle *newHandle,
+	const void *fromBuffer,
+	const size_t bufferSize,
+	bool copyBuffer);
+
+Instantiates an object from a buffer.  If the copyBuffer argument is true, the image data is copied,
+otherwise it will continue to reference the source buffer.
+
+extern int
+image3ValidateSignature(
+	const Image3ObjectHandle withHandle,
+	const u_int32_t validationOptions);
+
+Attempts to determine whether an image has a valid signature.  Will return EPERM if the image fails
+to validate either due to a lack of signature data, or incorrect signature data.
+
+Note that if the certificate chain supplied with the image contains a nested image, it will be
+available only if validation is successful.
+
+extern int
+image3TagIsPresent(
+	const Image3ObjectHandle withHandle,
+	const u_int32_t withTag);
+
+Tests for the presence of a tag without requiring any local storage.
+
+extern int
+image3GetTagStruct(
+	const Image3ObjectHandle withHandle,
+	const u_int32_t withTag,
+	void **structPtr,
+	size_t *structSize,
+	int skipCount);
+
+Workhorse tag retrieval function.  Fetches a pointer to the data of the nominated instance of the
+nominated tag.  If the structSize argument points to a nonzero value, the data size of the tag is
+required to match exactly or an error will be returned.
+
+extern int
+image3GetTagSignedNumber(
+	const Image3ObjectHandle withHandle,
+	const u_int32_t withTag,
+	int64_t *toNumber);
+
+extern int
+image3GetTagUnsignedNumber(
+	const Image3ObjectHandle withHandle,
+	const u_int32_t withTag,
+	u_int64_t *toNumber);
+
+extern int
+image3GetTagString(
+	const Image3ObjectHandle withHandle,
+	const u_int32_t withTag,
+	char **toBuffer);
+
+Wrappers around image3GetTagStruct to simplify the handling of simple data types.
+
+Image3ObjectHandle
+image3GetNestedImage(const Image3ObjectHandle withHandle);
+
+Fetshes the image3 handle for a nested image (if one is present).
+
+
+

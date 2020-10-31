@@ -1,0 +1,193 @@
+#!/usr/bin/tclsh
+#
+# Takes a PC trace from simulation and annotates it with function/line number information
+#
+# The PC trace is assumed to have one PC per line; the first likely-looking number on each line is assumed to be the PC.
+#
+# usage: pctrace-decoder <PC trace file> <path to symbolicated binary in build directory>
+#
+
+package require log
+package require fileutil
+
+################################################################################
+# utilities
+
+proc fatal {msg} {
+    global errorInfo
+
+    ::log::log error $msg
+#    if {$errorInfo != ""} {
+#	::log::log debug $errorInfo
+#    }
+    exit 1
+}
+
+
+################################################################################
+proc generateBatch {pctrace batchfile} {
+
+    ::log::log debug "parsing trace $pctrace"
+
+    ::fileutil::foreachLine inputLine $pctrace {
+	foreach tok $inputLine {
+	    switch -glob $tok {
+		[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] {
+		    set addresses($tok) ""
+		    break
+		}
+		
+		0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] {
+		    # hex number
+		    set addresses([string range $tok 2 end]) ""
+		    break
+		}
+		
+		default {
+		    continue
+		}
+	    }
+	}
+    }
+
+    if {![array exists addresses]} {
+	fatal "no recognisable data in '$pctrace' (maybe need a smarter parser?)"
+    }
+
+    set batch [open $batchfile w]
+
+    ::log::log debug "generating batchfile $batchfile"
+    foreach address [array names addresses] {
+	puts $batch [format "echo &%s&" $address]
+	puts $batch [format "info line *0x%s" $address]
+    }
+
+    close $batch
+}
+
+################################################################################
+proc runBatch {symfile batchfile batchresult} {
+
+    ::log::log debug "generating symbol data $batchresult"
+
+    if {[catch {exec gdb -n -batch -x $batchfile $symfile > $batchresult} result]} {
+	fatal "gdb failed: $result"
+    }
+}
+
+################################################################################
+proc annotateTrace {pctrace batchresult traceoutput condensed} {
+
+    ::log::log debug "reading batch results"
+    
+    ::fileutil::foreachLine inputLine $batchresult {
+
+	if {[scan $inputLine "&%\[^&\]&Line %d of \"%\[^\"\]\" starts at address %x <%\[^>\]> and ends at %x <%\[^>\]>" key lineNumber fileName startAddr startSym endAddr endSym] == 7} {
+	    if {[scan $startSym "%\[^+\]+%x" sym addr] == 2} {
+		set startSym $sym
+	    }
+	    if {[scan $endSym "%\[^+\]+%x" sym addr] == 2} {
+		set endSym $sym
+	    }
+
+	    if {$startSym == $endSym} {
+		set addrinfo($key) [format "%s:%s:%d" $fileName $startSym $lineNumber]
+	    } else {
+		set addrinfo($key) [format "%s:%s/%s:%d" $fileName $startSym $endSym $lineNumber]
+	    }
+	    continue
+	}
+
+	if {[scan $inputLine "&%\[^&\]&No line number information available for address %x <%\[^>\]>" key address addrSym] == 3} {
+	    if {[scan $addrSym "%\[^+\]+%x" sym addr] == 2} {
+		set addrSym $sym
+	    }
+	    set addrinfo($key) [format "%s" $addrSym]
+	    continue
+	}
+
+	log::log warning "unexpected batch result '$inputLine'"
+    }
+    
+    set out [open $traceoutput w]
+    set cout [open $condensed w]
+    ::log::log debug "annotating trace"
+
+    set lastSuffix ""
+    ::fileutil::foreachLine inputLine $pctrace {
+	set address ""
+	foreach tok $inputLine {
+	    switch -glob $tok {
+		[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] {
+		    set address $tok
+		    break
+		}
+		
+		0x[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F] {
+		    # hex number
+		    set address [string range $tok 2 end]
+		    break
+		}
+		
+		default {
+		    continue
+		}
+	    }
+	}
+	if {($address != "") && ([array names addrinfo -exact $address] != "")} {
+	    set suffix $addrinfo($address)
+	    if {$suffix != $lastSuffix} {
+		puts $cout $suffix
+		set lastSuffix $suffix
+	    }
+	} else {
+	    set suffix ""
+	}
+	puts $out [format "%s -- %s" $inputLine $suffix]
+    }
+    close $out
+    close $cout
+}
+
+################################################################################
+
+proc main {} {
+
+    global argv
+
+    # logging
+    ::log::lvSuppress error 0
+    ::log::lvSuppress warning 0
+    ::log::lvSuppress notice 0
+    ::log::lvSuppress debug 1
+
+    set pctrace [lindex $argv 0]
+    set symfile [lindex $argv 1]
+
+    if {![file readable $pctrace]} {
+	fatal "missing or unreadable PC trace file '$pctrace'"
+    }
+    if {![file readable $symfile]} {
+	fatal "missing or unreadable symbol file '$symfile'"
+    }
+
+    # generate a gdb batch file
+    ::log::log notice "generating gdb batch from PC trace..."
+    set batchfile [::fileutil::tempfile ptrace_decoder_batch_]
+    generateBatch $pctrace $batchfile
+
+    # invoke gdb against the batch file
+    ::log::log notice "processing batch..."
+    set batchresult [::fileutil::tempfile ptrace_decoder_result_]
+    runBatch $symfile $batchfile $batchresult
+    file delete $batchfile
+
+    # annotate the pctrace with results from the result file
+    ::log::log notice "annotating trace..."
+    set traceoutput [format "%s.annotated" $pctrace]
+    set condensed [format "%s.condensed" $pctrace]
+    annotateTrace $pctrace $batchresult $traceoutput $condensed
+    file delete $batchresult
+    ::log::log notice "Annotated output in '$traceoutput', condensed output in '$condensed'"
+}
+main

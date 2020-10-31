@@ -1,0 +1,14 @@
+# Clang analyzer ignore file:
+# Lines starting with "#" or blank lines are ignored
+# "bughashes" are [ error # line_of_code # filename ] pairs
+# They are printed in a textbox in the report.html file the analyzer prints
+# out.
+
+# <rdar://problem/19426972> Clang analyzer report of reading uninitialized value relies on mutual inconsistent assumptions
+[The right operand of '&' is a garbage value # ret_val |= (cal_bits[(*byte_pos) + 1] & remainder_mask) << space_in_this_byte; # dcs_calibration.c]
+[Function call argument is an uninitialized value # dprintf(DEBUG_CRITICAL, "gg charger: 0x%x=0x%x 0x%x=0x%x 0x%x=0x%x 0x%x=0x%x 0x%x=0x%x\n", # hdqgauge.c]
+
+# The following are benign (no security implications) errors in code that's
+# considered "legacy". If we were actively maintaining this code and using it
+# in new targets, these issues would be worth fixing, but we're not so we won't
+[Potential leak of memory pointed to by 'device' # } # effaceable_nand.c]

@@ -1,0 +1,184 @@
+#!/usr/bin/tclsh
+################################################################################
+#
+# Given a mach-o binary, use nm and gdb to size all the functions it contains
+#
+
+
+proc main { } {
+    global argv
+
+    set binfile [lindex $argv 0]
+    if {![file readable $binfile]} {
+     	puts "can't read '$binfile'"
+	exit 1
+    }
+
+    # run nm and parse the output
+    do_nm $binfile
+
+    # compute text symbol sizes
+    do_sizing
+
+    # now ask GDB for the file(s) containing each symbol
+    do_gdb $binfile
+
+    # and emit results
+    do_emit_sized
+    do_emit_files
+}
+
+
+proc do_nm {binfile} {
+
+    global symbol_addresses
+    global text_symbols
+
+    set lines [exec nm -n $binfile]
+
+    foreach {addr type _sym} $lines {
+	# record the fact that there is a symbol boundary at this address
+	lappend addresses "0x$addr"
+
+	# if the symbol is a text symbol, record its address
+	# this could be "tds" to get data symbols too..
+	if {[string match \[tT\] $type]} {
+	    # ignore the first leading underscore in the symbol name
+	    set sym [string range $_sym 1 end]
+
+	    # save the text symbol and its address
+	    set text_symbols($sym) "0x$addr"
+	}
+    }
+    set symbol_addresses [lsort -integer -unique $addresses]
+    puts "[llength [array names text_symbols]] text symbols"
+}
+
+
+proc do_sizing {} {
+
+    global symbol_addresses
+    global text_symbols
+    global text_symbol_sizes
+    global text_size_symbols
+
+    # walk the array of text symbols
+    foreach sym [array names text_symbols] {
+
+	# get the address of the symbol
+	set addr $text_symbols($sym)
+
+	# find the address in the global list of symbol addresses
+	set index [lsearch $symbol_addresses $addr]
+
+	# find the next symbol boundary
+	set nextaddr [lindex $symbol_addresses [expr $index + 1]]
+
+	# size is the distance between the two
+	set size [expr $nextaddr - $addr]
+	set text_symbol_sizes($sym) $size
+
+	# index symbols by size
+	lappend text_size_symbols($size) $sym
+    }
+}
+
+
+proc do_gdb {binfile} {
+
+    global symbol_filenames
+    global file_symbols
+
+    # ask GDB for the output of "info functions"
+    set lines [exec echo "info functions" | xcrun -sdk iphoneos.internal gdb --quiet $binfile 2>/dev/null]
+
+    # Output from GDB includes lines announcing files, and lines describing functions
+    # within those files.
+    foreach line [split $lines "\n"] {
+	# new file announcement
+	if {[string match "File *" $line]} {
+	    set current_file [string range $line 5 end-1]
+	}
+
+	# function within a file
+	set paren [string first "(" $line]
+	if {$paren > 0} {
+
+	    # function name is last token before ( in the line
+	    set frag [string range $line 0 [expr $paren - 1]]
+	    set sym [string trimleft [lindex [split $frag] end] "*"]
+
+	    # index filesnames by symbol
+	    lappend symbol_filenames($sym) $current_file
+
+	    # index symbols by filename
+	    lappend file_symbols($current_file) $sym
+	}
+    }
+}
+
+
+proc do_emit_sized {} {
+
+    global text_size_symbols
+    global symbol_filenames
+
+    puts "Symbols by size"
+    puts "==============="
+    foreach size [lsort -integer [array names text_size_symbols]] {
+	foreach sym $text_size_symbols($size) {
+	    if {[llength [array names symbol_filenames -exact $sym]] > 0} {
+		puts [format "%8d  %-50s %s" $size $sym $symbol_filenames($sym)]
+	    } else {
+		puts [format "%8d  %-50s" $size $sym]
+	    }
+	}
+    }
+    puts ""
+}
+
+proc do_emit_files {} {
+
+    global file_symbols
+    global text_symbol_sizes
+
+    puts "Symbols by file size"
+    puts "===================="
+    foreach fn [array names file_symbols] {
+	set size 0
+	foreach sym $file_symbols($fn) {
+	    if {[array names text_symbol_sizes $sym] != ""} {
+		incr size $text_symbol_sizes($sym)
+	    } else {
+		puts "WARNING: no size information for '$sym' - nm didn't see it."
+	    }
+	}
+	lappend size_files($size) $fn
+    }
+
+    foreach size [lsort -integer [array names size_files]] {
+	foreach fn $size_files($size) {
+	    puts "$fn: ($size)"
+	    set lines [list]
+	    foreach sym $file_symbols($fn) {
+		if {[array names text_symbol_sizes $sym] != ""} {
+		    lappend lines [list $text_symbol_sizes($sym) $sym]
+		}
+	    }
+	    foreach ent [lsort -index 0 -integer $lines] {
+		puts [format "%8d  %-50s" [lindex $ent 0] [lindex $ent 1]]
+	    }
+	    puts ""
+	}
+    }
+}
+
+
+
+
+
+
+
+
+################################################################################
+main

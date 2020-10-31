@@ -1,0 +1,25 @@
+#!/bin/bash -e
+
+# Simple helper script for enforcing file size
+#
+# This is a bit too cluttered in a Makefile rule.
+
+if [ $# -ne 3 ]; then
+	echo "Usage: $0 filename max_size name_of_check"
+	exit 1
+fi
+
+FILENAME=$1
+MAXSIZE=$(( $2 ))
+NAME=$3
+
+SIZE=`stat -f '%z' "$FILENAME"`
+
+if [ $SIZE -gt $MAXSIZE ]; then
+	echo "[check_product_size $NAME]: $FILENAME is too big! Built size: $SIZE bytes, limit: $MAXSIZE bytes, oversized by $(( $SIZE - $MAXSIZE )) bytes." 1>&2
+	exit 1
+fi
+
+echo "[check_product_size $NAME]: $FILENAME PASSED. Usage: $SIZE/$MAXSIZE bytes"
+
+exit 0

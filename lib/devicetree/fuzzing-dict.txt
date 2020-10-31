@@ -1,0 +1,22 @@
+#
+# AFL fuzzing dictionary for device tree
+#
+# See docs/fuzzing.txt
+#
+# Pass to afl-fuzz with -x option
+
+zeroes0="zeroes/0"
+zeroes1="zeroes/1"
+zeroes2="zeroes/2"
+zeroes3="zeroes/3"
+zeroes4="zeroes/4"
+zeroes5="zeroes/5"
+zeroes7="zeroes/7"
+zeroes500="zeroes/500"
+syscfgAAAA="syscfg/AAAA"
+syscfgAAAB="syscfg/AAAB"
+syscfgAAAC="syscfg/AAAC"
+syscfgABCD="syscfg/ABCD"
+macaddr="macaddr/i"
+macaddrA="macaddr/a"
+macaddrB="macaddr/b"

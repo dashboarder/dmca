@@ -1,0 +1,250 @@
+# iBoot gdb macros
+#
+# Vaguely inspired by the 'kgm' package.
+#
+
+set print asm-demangle on
+set cp-abi gnu-v2
+set kaslr-memory-search off
+
+echo Loading iBoot GDB macros package.  Type "help igm" for more info.\n
+
+define igm
+printf ""
+echo  These are the gdb macros for iBoot debugging.  Type "help igm" for more info.\n
+end
+
+document igm
+| These are the iBoot gdb macros.  These gdb macros are intended to be
+| used when debugging iBoot via jtag.
+|
+| The following macros are available in this package:
+|
+|	showtasks	Display a list of tasks
+|	switchtotask	Switch to different task
+|	showallstacks	Show stack of each tasks
+|
+|	showheap	Show blocks allocated in the heap
+|
+| Type "help <macro>" for more specific help on a particular macro.
+| Type "show user <macro>" to see what the macro is really doing.
+end
+
+set $igm_mtype = sizeof(void *)
+set $igm_lp64 = ($igm_mtype == 8)
+
+# Print a pointer
+define showptr
+	if ($igm_lp64)
+		printf "0x%016llx", $arg0
+	else
+		printf "0x%08x", $arg0
+	end	
+end
+
+# Traverse a list expected to be the queue_entry list from a task, and print anything
+# found on the list that is not a task; it should be the event being waited on.
+define print_non_tasks_in_list
+	set $igm_ntil_terminal = (struct list_node *)$arg0
+	set $igm_ntil_cursor = $igm_ntil_terminal->next
+	while ($igm_ntil_cursor != $igm_ntil_terminal)
+		if ($igm_lp64)
+			set $igm_ntil_task = (struct task *)((void *)$igm_ntil_cursor - 20)
+			if ($igm_ntil_task != 0x7461736b)
+				set $igm_ntil_event = (struct task_event *)((void *)$igm_ntil_cursor - 8)
+				showptr $igm_ntil_event
+				end
+		else
+			set $igm_ntil_task = (struct task *)((void *)$igm_ntil_cursor - 12)
+			if ($igm_ntil_task != 0x7461736b)
+				set $igm_ntil_event = (struct task_event *)((void *)$igm_ntil_cursor - 8)
+				showptr $igm_ntil_event
+			end
+		end
+		set $igm_ntil_cursor = $igm_ntil_cursor->next
+	end
+end
+	
+       
+define showtask
+	showptr $arg0
+	set $igm_task = (struct task *)$arg0
+	if (($igm_task->magic != 0x7461736b) || ($igm_task->magic2 != 0x74736b32))
+		printf " not a valid task\n"
+	else
+		printf "  %16s: ", &$igm_task->name
+		if ($igm_task->state == 0)
+			printf "INITIAL"
+		end
+		if ($igm_task->state == 1)
+			printf "READY"
+		end
+		if ($igm_task->state == 2)
+			printf "RUNNING"
+		end
+		if ($igm_task->state == 3)
+			printf "BLOCKED on event "
+			print_non_tasks_in_list &$igm_task->queue_node
+		end
+		if ($igm_task->state == 4)
+			printf "SLEEPING for "
+			printf "%lluus ", $igm_task->sleep_callout.delay
+			printf "@ 0x%016llx", $igm_task->sleep_callout.sched_ticks
+		end
+		if ($igm_task->state == 5)
+			printf "FINISHED"
+		end
+		printf "\n"
+	end
+end
+
+define showtasks
+	showtask &bootstrap_task
+	set $igm_task_cursor = (struct list_node *)task_list->next
+	while $igm_task_cursor != &task_list
+		if ($igm_lp64)
+			set $igm_task_task = ((void *)$igm_task_cursor - 8)
+		else	
+			set $igm_task_task = ((void *)$igm_task_cursor - 4)
+		end
+		showtask $igm_task_task
+		set $igm_task_cursor = $igm_task_cursor->next
+	end
+end
+
+document showtasks
+| Print a summary listing of all tasks.
+end
+
+define dobacktrace
+	set $_task = (struct task*)$arg0
+	set $_fp = (void **)$_task->arch.fp
+	printf "%s: \n", $_task->name
+	while $_fp != 0
+		set $_pc = *($_fp + 1)
+		x/i $_pc
+		set $_fp = (void**)*$_fp
+	end
+end
+
+define showallstacks
+	if ($igm_lp64)
+		set $igm_task_cursor = (struct list_node *)task_list->next
+		while $igm_task_cursor != &task_list
+			if ($igm_lp64)
+				set $igm_task_task = ((void *)$igm_task_cursor - 8)
+			else	
+				set $igm_task_task = ((void *)$igm_task_cursor - 4)
+			end
+			dobacktrace $igm_task_task
+			printf "-------------------------------------\n"
+			set $igm_task_cursor = $igm_task_cursor->next
+		end
+	else
+		printf "XXX Not supported yet\n"
+	end
+end
+
+document showallstacks
+| Routine to print out the stack for each tasks in the system.
+end
+
+# XXX doesn't seems to work
+define switchtotask
+	printf "XXX Not supported yet\n"
+	set $igm_newtask = (struct task *)$arg0
+	if (($igm_newtask->magic != 0x7461736b) || ($igm_newtask->magic2 != 0x74736b32))
+		printf "not a valid task\n"
+	else
+		if ($igm_lp64)
+			set $igm_arch_state = &$igm_newtask->arch
+			set $r16 = $igm_arch_state->regs[15]
+			set $r17 = $igm_arch_state->regs[16]
+			set $r19 = $igm_arch_state->regs[18]
+			set $r20 = $igm_arch_state->regs[19]
+			set $r21 = $igm_arch_state->regs[20]
+			set $r22 = $igm_arch_state->regs[21]
+			set $r23 = $igm_arch_state->regs[22]
+			set $r24 = $igm_arch_state->regs[23]
+			set $r25 = $igm_arch_state->regs[24]
+			set $r26 = $igm_arch_state->regs[25]
+			set $r27 = $igm_arch_state->regs[26]
+			set $r28 = $igm_arch_state->regs[27]
+			set $r29 = $igm_arch_state->fp
+			set $r30 = $igm_arch_state->lr
+			set $r31 = $igm_arch_state->sp
+			flushregs
+			flushstack
+		else
+			set $igm_arch_state = &$igm_newtask->arch
+			set $r4 = $igm_arch_state->regs[0]
+			set $r5 = $igm_arch_state->regs[1]
+			set $r6 = $igm_arch_state->regs[2]
+			set $r7 = $igm_arch_state->regs[3]
+			set $r8 = $igm_arch_state->regs[4]
+			set $r9 = $igm_arch_state->regs[5]
+			set $r10 = $igm_arch_state->regs[6]
+			set $r11 = $igm_arch_state->regs[7]
+			set $r13 = $igm_arch_state->regs[8]
+			set $r14 = $igm_arch_state->regs[9]
+			flushregs
+			flushstack
+		end
+	end
+end
+
+document switchtotask
+Syntax: switchtotask <task address>
+| Sets GDB's idea of the current task to <task address>
+end
+
+define show_heap_chunk
+	set $chunk_ptr = (struct chunk_data *)$arg0
+	printf "chunk @"
+	showptr $chunk_ptr->chunk_base
+	printf "/0x%x\n", $chunk_ptr->chunk_size
+
+	printf "  block      size       type   ptr        len\n"
+	set $index = 1
+	while $index != 0
+
+		# compute the block pointer from the index
+		set $block_ptr = (struct heap_block *)($chunk_ptr->chunk_base + $index)
+
+		if $block_ptr->this_size == 1
+			# this is the end of the chunk
+			loop_break
+		end
+
+		# print block address and size
+		showptr $block_ptr 
+		printf " 0x%08x", $block_ptr->this_size
+
+		# decode and print block contents
+		if $block_ptr->this_free != 0
+			printf " free             "
+		else 
+			printf " malloc "
+			showptr $block_ptr + 1
+		end
+		printf " 0x%08x\n", ($block_ptr->this_size - 1) * sizeof(struct heap_block)
+
+		# XXX range-check
+		set $index = $index + $block_ptr->this_size
+       end
+
+end
+
+define showheap
+	# Iterate chunks and print these first
+	# XXX might be good to have the heap use more unique names
+	set $chunk_iterator = 0
+	while $chunk_iterator < chunk_count
+		show_heap_chunk &lead[$chunk_iterator]
+		set $chunk_iterator = $chunk_iterator + 1
+	end
+end
+
+document showheap
+| Print the contents of the heap.
+end

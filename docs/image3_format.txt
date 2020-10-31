@@ -1,0 +1,199 @@
+Image3 Tagged Object Format
+===========================
+
+Overview
+--------
+The Image3 format attempts to address some of the shortcomings of the Image2 and 'DFU' formats
+based on lessons learned during their deployment.
+
+Compared with Image2, Image3 features far fewer fields in the fixed portion of the header, and
+discards many of the optional behaviours that have been found to be redundant and/or confusing.
+
+Compared with the DFU format, Image3 provides a flexible mechanism for extending image metadata
+and a simpler signing and encryption strategy.
+
+
+Description
+-----------
+The Image3 object format features a compact fixed header, followed by a variable-length buffer
+containing (tag,data) tuples.  A balanced approach is taken towards the use of structured tag data;
+tags should avoid collecting unrelated data items, but structured tags are acceptable.
+
+The header contains a magic number ('Img3') identifying the format, size information for the tag
+buffer and signed area, and a type value used to describe the contents of the image.
+
+When placed into storage 'owned' by the device, a field in the fixed header can be used to indicate
+the skip distance to the next image.  This field should be considered a hint only, as it is not
+signed.
+
+Code handling tags should be careful not to assume any set of valid tags; new tags may be added
+at any point.
+
+
+Security
+--------
+Image3 objects are not mutable once hashed and signed.  The signing of an image is indicated by
+a non-zero value for the "signed length" header field, which further implies the presence of
+two tags containing the signed hash and applicable certificate chain.  These tags are always
+placed last in the buffer, and are necessarily not covered by the signature.  The two tags
+contain a signed hash (placed first) and the certificate chain buffer (placed last).
+
+The signed hash covers the signed length field and the buffer as described by that length.  Code
+handling Image3 images must range-check the buffer length against whatever local buffer is in use.
+Once the signed hash is validated, the internal structure of the object can be trusted and further
+bounds checking is not required for security purposes.
+
+When an Image3 object is written into local storage (storage 'owned' by a given system) the signed
+hash should be encrypted using a system-private key.  When the object is subsequently read back the
+hash should likewise be decrypted.  This operation prevents objects being 'stolen' by code that does
+not have access to the system-private key, limiting the potential impact of leaked objects.
+
+
+Format Details
+--------------
+In the descriptions below, tags may be described as 'unique', in which case only one may be present,
+or 'multiple' in which case more than one may legally be present.  Additionally, tags may be
+mandatory or optional.
+
+
+Image header
+''''''''''''
+struct image3_header {
+       UInt32			ihMagic = 'Img3';
+       UInt32			ihSkipDistance;
+       UInt32			ihBufferLength;
+       UInt32			ihSignedLength;
+       UInt32			ihType;
+       UInt8			ihBuffer[];
+};
+
+
+ihSkipDistance is the byte offset from the address of the current header to the next header when the
+object is placed in a byte-addressed storage container, e.g. ROM.
+
+ihBufferLength is the valid length of the buffer in bytes.
+
+ihSignedLength is the length of the portion of the buffer which is signed.  This is thus the offset 
+from the start of the buffer to the tag containing the signed hash.
+
+ihType is the four-byte type tag for the image.  This is typically consulted before signature
+verification when scanning a collection of images, but as it is contained within the signed area
+providing verification is successful it can be considered trusted.
+
+
+Tag header
+''''''''''
+struct image3_tag {
+       UInt32			itTag = 'xxxx';
+       UInt32			itLength;
+       UInt32			itSkipDistance;
+       UInt8			itBuffer[];
+};
+
+itLength is the valid length in bytes of the data within the tag's data buffer.
+
+itSkipDistance is the distance in bytes from the address of the current tag header to the next tag
+header.  This value may be adjusted in order to obtain specific alignment of the payload of
+subsequent tags.
+
+
+Signed Hash - "SHSH" - unique, optional
+'''''''''''''''''''''''''''''''''''''''
+The SHSH tag contains the signed SHA-1 hash of the signed portion of the buffer.  If present it is
+always the second-last tag in the buffer.
+
+
+Certificate Chain - 'CERT' - unique, optional
+'''''''''''''''''''''''''''''''''''''''''''''
+The CERT tag contains the opaque certificate chain that will be used to validate the signed hash.
+If present it is always the last tag in the buffer.
+
+Note that it is permitted for the leaf certificate in the certificate chain to carry an Image3 
+object (which is assumed to be signed/certified by the chain itself), and trust evaluation of
+an object may add valid tags to the object by way of this embedded image.
+
+
+Version - 'VERS' - unique, optional
+'''''''''''''''''''''''''''''''''''
+Free-form 7-bit ascii version information
+
+
+Security Epoch - 'SEPO' - unique, optional
+''''''''''''''''''''''''''''''''''''''''''
+32-bit unsigned little-endian value.
+
+This tag provides the security epoch for which the image is considered valid.  If the tag is 
+not present, the image is valid for any epoch.
+
+
+Security Domain - 'SDOM' - unique, optional
+'''''''''''''''''''''''''''''''''''''''''''
+Describes the organisational domain for which this image can be considered valid.
+
+This tag is supplied by the leaf certificate rather than the image itself, in order to constrain the
+uses to which a given certificate can be put.
+
+#define kImage3SecurityDomainManufacturer	0
+#define kImage3SecurityDomainDarwin		1
+
+
+Production Status - 'PROD' - unique, optional
+'''''''''''''''''''''''''''''''''''''''''''''
+Indicates whether this is a 'production' status image.
+
+This tag is supplied by the leaf certificate rather than the image itself, in order to constrain the
+uses to which a given certificate can be put.
+
+#define kImage3SecurityProductionStatus		1
+
+
+Chip Type ID - 'CHIP' - multiple, optional
+''''''''''''''''''''''''''''''''''''''''''
+Indicates which specific chip type the image is valid for.
+
+This tag is supplied by the leaf certificate rather than the image itself, in order to constrain the
+uses to which a given certificate can be put.
+
+
+Board Type ID - 'BORD' - multiple, optional
+Unique Chip ID - 'ECID' - multiple, optional
+''''''''''''''''''''''''''''''''''''''''''''
+These tags allow for the restriction of objects to specific chip or board types, or specific chips.
+
+For the payload to be considered valid, one of each present tag type must match the device.  In the
+absence of a tag type, all devices are assumed to match that type.
+
+
+Data Payload - 'DATA' - unique, optional
+''''''''''''''''''''''''''''''''''''''''
+This tag is used in the common case where the object has a plain data payload.
+
+
+Encryption Keybag - 'KBAG' - multiple, optional
+'''''''''''''''''''''''''''''''''''''''''''''''
+In the case where the data payload is encrypted, one or more keybag tags will be present.  The data
+payload is never encrypted with a key directly known to the consumer; the payload key is placed in a
+keybag, encrypted by a key known to a specific consumer.  The keybag includes a selector mechanism
+that allows the consumer to determine which keybag is applicable.
+
+The presence of a keybag indicates that the data payload is encrypted.
+
+typedef struct {
+        u_int32_t       kbSelector;
+#define kImage3KeybagSelectorNoKey	(0)
+#define kImage3KeybagSelectorChipUnique	(1)
+        u_int32_t       kbKeySize;
+	u_int8_t	kbIVBytes[16];
+        u_int8_t        kbKeyBytes[32];
+} Image3TagKBAG;
+
+The kbKeySize value is expresed in bits.
+
+The kbSelector indicates which key is to be used to decrypt the key in kbKeyBytes.  The decryption
+buffer should be padded with zeroes before decrypting the key.  
+
+kImage3KeybagSelectorNoKey   	    The key is not encrypted; use it as-is (this is not useful 
+				    except for testing purposes).
+
+kImage3KeybagSelectorChipUnique	    The key is encrypted with a key unique to the chip type;
+				    this is generally referred to as GID 0.

@@ -1,0 +1,414 @@
+/*
+ * Copyright (C) 2009-2013 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+
+/* Default K93/K94 SoC Pin Configuration, v1.2 */
+
+#if PIN_CFG_AP
+#define HI_DRIVE_STR	DRIVE_X3
+#define GPIO_DRIVE_STR	DRIVE_X2
+#elif PIN_CFG_DEV
+#define HI_DRIVE_STR	DRIVE_X4
+#define GPIO_DRIVE_STR	DRIVE_X2
+#endif
+
+#define BB_DRIVE_STR		HI_DRIVE_STR
+#define BT_DRIVE_STR		HI_DRIVE_STR
+#define SWI_DRIVE_STR		HI_DRIVE_STR
+#define GPS_DRIVE_STR		HI_DRIVE_STR
+#define FMI_DRIVE_STR		HI_DRIVE_STR
+#define SPI_DRIVE_STR		HI_DRIVE_STR
+#define SPI_CS_DRIVE_STR	GPIO_DRIVE_STR
+#define I2C_DRIVE_STR		HI_DRIVE_STR
+#define DWI_DRIVE_STR		HI_DRIVE_STR
+#define I2S_DRIVE_STR		HI_DRIVE_STR
+#define SDIO_DRIVE_STR		HI_DRIVE_STR
+#define CAM_DRIVE_STR		HI_DRIVE_STR
+#define UART_DRIVE_STR		HI_DRIVE_STR
+
+#if PIN_CFG_AP
+static const u_int32_t gpio_default_cfg_ap[GPIO_GROUP_COUNT * GPIOPADPINS] = {
+#elif PIN_CFG_DEV
+static const u_int32_t gpio_default_cfg_dev[GPIO_GROUP_COUNT * GPIOPADPINS] = {
+#endif
+/* Port  0 */
+	CFG_IN,								// GPIO0		-> MENU_KEY (REQUEST_DFU2)
+	CFG_IN,								// GPIO1		-> HOLD_KEY (REQUEST_DFU1)
+	CFG_DISABLED,							// GPIO2		->
+	CFG_DISABLED,							// GPIO3		->
+	CFG_DISABLED,							// GPIO4		->
+	CFG_DISABLED,							// GPIO5		->
+	CFG_DISABLED,							// GPIO6		->
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// GPIO7		-> PM_BT_WAKE
+
+/* Port  1 */
+	CFG_DISABLED,							// GPIO8		->
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// GPIO9		->
+	CFG_DISABLED,							// GPIO10		->
+	CFG_DISABLED,							// GPIO11		->
+	CFG_DISABLED,							// GPIO12		->
+#else
+#if SUB_TARGET_K94
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// GPIO9		-> PM_RADIO_ON
+#else
+	CFG_IN,								// GPIO9		-> PM_RADIO_ON
+#endif
+	CFG_DISABLED,							// GPIO10		->
+	CFG_IN,								// GPIO11		-> RST_DET_L
+	CFG_IN,								// GPIO12		-> SPI_IPC_SRDY
+#endif
+	CFG_IN | PULL_UP,						// GPIO13		-> IRQ_PMU_L
+	CFG_DISABLED,							// GPIO14		->
+	CFG_IN | PULL_UP,						// GPIO15		-> IRQ_CODEC_L
+
+/* Port  2 */
+	CFG_DISABLED,							// GPIO16		-> BOARD_ID[3]
+	CFG_IN | PULL_DOWN,						// GPIO17		-> IRQ_GYRO_INT2
+	CFG_DISABLED,							// GPIO18		-> BOOT_CONFIG[0]
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// GPIO19		-> PM_KEEPACT
+	CFG_DISABLED,							// GPIO20		->
+	CFG_IN | PULL_UP,						// GPIO21		-> IRQ_GRAPE_HOST_INT_L
+	CFG_DISABLED,							// GPIO22		->
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// GPIO23		->
+#else
+	CFG_IN,								// GPIO23		-> GPS_SYNC
+#endif
+
+/* Port  3 */
+	CFG_DISABLED,							// GPIO24		-> GSM_TXBURST_IND
+	CFG_DISABLED,							// GPIO25		-> BOOT_CONFIG[1]
+	CFG_IN,								// GPIO26		-> FORCE_DFU
+	CFG_OUT_0,							// GPIO27		-> DFU_STATUS
+	CFG_DISABLED,							// GPIO28		-> BOOT_CONFIG[2]
+	CFG_DISABLED,							// GPIO29		-> BOOT_CONFIG[3]
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// GPIO30		->
+	CFG_DISABLED,							// GPIO31		->
+#else
+	CFG_OUT_1 | GPIO_DRIVE_STR,					// GPIO30		-> RST_GPS_L
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// GPIO31		-> PM_GPS_STANDBY
+#endif
+
+/* Port  4 */
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// GPIO32		->
+#else
+	CFG_IN,								// GPIO32		-> IRQ_PROX_INT_L
+#endif
+	CFG_IN | PULL_DOWN,						// GPIO33		-> IRQ_GYRO_INT1
+	CFG_DISABLED,							// GPIO34		-> IRQ_GPS_INT_L
+	CFG_DISABLED,							// GPIO35		->
+	CFG_IN | PULL_UP,						// GPIO36		-> IRQ_ACCEL_INT1_L
+	CFG_IN | PULL_UP,						// GPIO37		-> IRQ_ALS_INT_L
+	CFG_IN | PULL_UP,						// GPIO38		-> IRQ_ACCEL_INT2_L
+	CFG_OUT_0,							// GPIO39		-> AUD_SPKRAMP_MUTE_L
+
+/* Port  5 */
+	CFG_DISABLED,							// EHCI_PORT_PWR[0]	-> BOARD_REV0
+	CFG_DISABLED,							// EHCI_PORT_PWR[1]	-> BOARD_REV1
+	CFG_DISABLED,							// EHCI_PORT_PWR[2]	-> BOARD_REV2
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// UART1_TXD		->
+	CFG_DISABLED,							// UART1_RXD		->
+	CFG_DISABLED,							// UART1_RTSN		->
+	CFG_DISABLED,							// UART1_CTSN		->
+	CFG_DISABLED,							// UART2_TXD		->
+#else
+#if SUB_TARGET_K94
+	CFG_FUNC0 | BB_DRIVE_STR,					// UART1_TXD		-> UART_AP_1_TXD (BB USART)
+	// <rdar://problem/11526274> Add pullup to BB UART RX pin to work around glitch during baseband updates (Sundance)
+	CFG_FUNC0 | PULL_UP,						// UART1_RXD		-> UART_AP_1_RXD
+#else
+	CFG_OUT_0 | BB_DRIVE_STR,					// UART1_TXD		-> UART_AP_1_TXD (BB USART)
+	CFG_FUNC0,							// UART1_RXD		-> UART_AP_1_RXD
+#endif
+	CFG_FUNC0 | BB_DRIVE_STR,					// UART1_RTSN		-> UART_AP_1_RTS_L
+	CFG_FUNC0,							// UART1_CTSN		-> UART_AP_1_CTS_L
+	CFG_FUNC0 | BB_DRIVE_STR,					// UART2_TXD		-> UART_AP_2_TXD (BB UMTS)
+#endif
+
+/* Port  6 */
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// UART2_RXD		->
+	CFG_DISABLED,							// UART2_RTSN		->
+#else
+	CFG_FUNC0,							// UART2_RXD		-> UART_AP_2_RXD
+#if SUB_TARGET_K94
+	CFG_OUT_1 | GPIO_DRIVE_STR,					// UART2_RTSN		-> RST_BB_L
+#else
+	CFG_IN,								// UART2_RTSN		-> RST_BB_L
+#endif
+#endif
+	CFG_IN,								// UART2_CTSN		-> SRL_L
+	CFG_FUNC0 | BT_DRIVE_STR,					// UART3_TXD		-> UART_AP_3_TXD (BT)
+	CFG_FUNC0,							// UART3_RXD		-> UART_AP_3_RXD
+	CFG_OUT_1 | BT_DRIVE_STR,					// UART3_RTSN		-> UART_AP_3_RTS_L
+	CFG_FUNC0,							// UART3_CTSN		-> UART_AP_3_CTS_L
+	CFG_FUNC0 | SWI_DRIVE_STR,					// UART5_RTXD		-> BATTERY_SWI
+
+/* Port  7 */
+	CFG_DISABLED,							// UART6_TXD		->
+	CFG_IN | PULL_UP,						// UART6_RXD		-> AUD_VOL_UP_L
+#if SUB_TARGET_K95
+	CFG_OUT_0,							// UART6_RTSN		-> IPC_GPIO
+#else
+	CFG_DISABLED,							// UART6_RTSN		->
+#endif
+	CFG_IN | PULL_UP,						// UART6_CTSN		-> AUD_VOL_DOWN_L
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// UART4_TXD		-> UART_AP_4_TXD (GPS)
+	CFG_DISABLED,							// UART4_RXD		-> UART_AP_4_RXD
+	CFG_DISABLED,							// UART4_RTSN		-> UART_AP_4_RTS_L
+	CFG_DISABLED,							// UART4_CTSN		-> UART_AP_4_CTS_L
+#else
+	CFG_FUNC0 | GPS_DRIVE_STR,					// UART4_TXD		-> UART_AP_4_TXD (GPS)
+	CFG_FUNC0,							// UART4_RXD		-> UART_AP_4_RXD
+	CFG_FUNC0 | GPS_DRIVE_STR,					// UART4_RTSN		-> UART_AP_4_RTS_L
+	CFG_FUNC0,							// UART4_CTSN		-> UART_AP_4_CTS_L
+#endif
+
+/* Port  8 */
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN3		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN2		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN1		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN0		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CLE		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_ALE		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_REN		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_WEN		->
+
+/* Port  9 */
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO7		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO6		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO5		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO4		->
+	CFG_DISABLED,							// FMI0_DQS		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO3		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO2		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO1		->
+
+/* Port 10 */
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI0_IO0		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN3		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN2		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN1		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN0		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CLE		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_ALE		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_REN		->
+
+/* Port 11 */
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_WEN		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO7		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO6		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO5		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO4		->
+	CFG_DISABLED,							// FMI1_DQS		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO3		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO2		->
+
+/* Port 12 */
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO1		->
+	CFG_FUNC0 | BUS_HOLD | FMI_DRIVE_STR,				// FMI1_IO0		->
+	CFG_DISABLED,							// FMI2_CEN3		->
+	CFG_DISABLED,							// FMI2_CEN2		->
+	CFG_DISABLED,							// FMI2_CEN1		->
+	CFG_DISABLED,							// FMI2_CEN0		->
+	CFG_DISABLED,							// FMI2_CLE		->
+	CFG_DISABLED,							// FMI2_ALE		->
+
+/* Port 13 */
+	CFG_DISABLED,							// FMI2_REN		->
+	CFG_DISABLED,							// FMI2_WEN		->
+	CFG_DISABLED,							// FMI2_IO7		->
+	CFG_DISABLED,							// FMI2_IO6		->
+	CFG_DISABLED,							// FMI2_IO5		->
+	CFG_DISABLED,							// FMI2_IO4		->
+	CFG_DISABLED,							// FMI2_DQS		->
+	CFG_DISABLED,							// FMI2_IO3		->
+
+/* Port 14 */
+	CFG_DISABLED,							// FMI2_IO2		->
+	CFG_DISABLED,							// FMI2_IO1		->
+	CFG_DISABLED,							// FMI2_IO0		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN7		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN6		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN5		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI0_CEN4		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN7		->
+
+/* Port 15 */
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN6		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN5		->
+	CFG_FUNC0 | FMI_DRIVE_STR,					// FMI1_CEN4		->
+	CFG_DISABLED,							// FMI3_CEN3		->
+	CFG_DISABLED,							// FMI3_CEN2		->
+	CFG_DISABLED,							// FMI3_CEN1		->
+	CFG_DISABLED,							// FMI3_CEN0		->
+	CFG_DISABLED,							// FMI3_CLE		->
+
+/* Port 16 */
+	CFG_DISABLED,							// FMI3_ALE		->
+	CFG_DISABLED,							// FMI3_REN		->
+	CFG_DISABLED,							// FMI3_WEN		->
+	CFG_DISABLED,							// FMI3_IO7		->
+	CFG_DISABLED,							// FMI3_IO6		->
+	CFG_DISABLED,							// FMI3_IO5		->
+	CFG_DISABLED,							// FMI3_IO4		->
+	CFG_DISABLED,							// FMI3_DQS		->
+
+/* Port 17 */
+	CFG_DISABLED,							// FMI3_IO3		->
+	CFG_DISABLED,							// FMI3_IO2		->
+	CFG_DISABLED,							// FMI3_IO1		->
+	CFG_DISABLED,							// FMI3_IO0		->
+	CFG_OUT_1 | GPIO_DRIVE_STR,					// FMI2_CEN7		-> GRAPE_FW_DNLD_EN_L
+	CFG_DISABLED,							// FMI2_CEN6		-> RST_GRAPE_L
+	CFG_DISABLED,							// FMI2_CEN5		->
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// FMI2_CEN4		-> RST_MLC_L
+
+/* Port 18 */
+	CFG_DISABLED,							// FMI3_CEN7		->
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// FMI3_CEN6		-> PM_MLC_PWR_EN
+	CFG_OUT_0,							// FMI3_CEN5		-> SD_RESET_L
+	CFG_DISABLED,							// FMI3_CEN4		->
+	CFG_DISABLED,							// SPI3_MOSI		-> 
+	CFG_DISABLED,							// SPI3_MISO		-> 
+	CFG_DISABLED,							// SPI3_SCLK		-> 
+	CFG_DISABLED,							// SPI3_SSIN		-> 
+
+/* Port 19 */
+	CFG_FUNC0,							// ISP0_PRE_FLASH	->
+	CFG_FUNC0,							// ISP0_FLASH		->
+	CFG_FUNC0,							// ISP1_PRE_FLASH	->
+	CFG_FUNC0,							// ISP1_FLASH		->
+	CFG_FUNC0 | SPI_DRIVE_STR,					// SPI1_SCLK		-> SPI_GRAPE_SCLK
+	CFG_FUNC0 | SPI_DRIVE_STR,					// SPI1_MOSI		-> SPI_GRAPE_MOSI
+	CFG_FUNC0,							// SPI1_MISO		-> SPI_GRAPE_MISO
+	CFG_OUT_1 | SPI_CS_DRIVE_STR,					// SPI1_SSIN		-> SPI_GRAPE_CS_L
+
+/* Port 20 */
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C2_SDA		-> I2C2_SDA_3V0
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C2_SCL		-> I2C2_SCL_3V0
+	CFG_DISABLED,							// SPI0_SCLK		-> SPI0_SCLK/BOARD_ID[0]
+	CFG_DISABLED,							// SPI0_MOSI		-> SPI0_MOSI/BOARD_ID[1]
+	CFG_DISABLED,							// SPI0_MISO		-> SPI0_MISO/BOARD_ID[2]
+	CFG_DISABLED,							// SPI0_SSIN		-> SPI0_SSIN
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// SPI2_SCLK		->
+	CFG_DISABLED,							// SPI2_MOSI		->
+#else
+	CFG_FUNC0 | SPI_DRIVE_STR,					// SPI2_SCLK		-> SPI_IPC_SCLK
+	CFG_FUNC0 | SPI_DRIVE_STR,					// SPI2_MOSI		-> SPI_IPC_MOSI
+#endif
+
+/* Port 21 */
+#if SUB_TARGET_K93
+	CFG_DISABLED,							// SPI2_MISO		->
+	CFG_DISABLED,							// SPI2_SSIN		->
+#else
+	CFG_FUNC0,							// SPI2_MISO		-> SPI_IPC_MISO
+	CFG_OUT_0 | SPI_CS_DRIVE_STR,					// SPI2_SSIN		-> SPI_IPC_MRDY
+#endif
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C0_SDA		-> I2C0_SDA_1V8
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C0_SCL		-> I2C0_SCL_1V8
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C1_SDA		-> I2C1_SDA_1V8
+	CFG_FUNC0 | I2C_DRIVE_STR,					// I2C1_SCL		-> I2C1_SCL_1V8
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP0_SDA		-> ISP_AP_0_SDA
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP0_SCL		-> ISP_AP_0_SCL
+
+/* Port 22 */
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP1_SDA		-> ISP_AP_1_SDA
+	CFG_FUNC0 | I2C_DRIVE_STR,					// ISP1_SCL		-> ISP_AP_1_SCL
+	CFG_FUNC0 | SDIO_DRIVE_STR,					// SDIO_CLK		->
+	CFG_FUNC0 | PULL_UP | SDIO_DRIVE_STR,				// SDIO_CMD		->
+	CFG_FUNC0 | PULL_UP | SDIO_DRIVE_STR,				// SDIO_DATA0		->
+	CFG_FUNC0 | PULL_UP | SDIO_DRIVE_STR,				// SDIO_DATA1		->
+	CFG_FUNC0 | PULL_UP | SDIO_DRIVE_STR,				// SDIO_DATA2		->
+	CFG_FUNC0 | PULL_UP | SDIO_DRIVE_STR,				// SDIO_DATA3		->
+
+/* Port 23 */
+	CFG_DISABLED,							// MIPI_VSYNC		->
+	CFG_DISABLED,							// TMR32_PWM0		->
+	CFG_DISABLED,							// TMR32_PWM1		->
+	CFG_DISABLED,							// TMR32_PWM2		->
+	CFG_DISABLED,							// SWI_DATA		->
+	CFG_FUNC0 | PULL_DOWN,						// DWI_DI		->
+	CFG_FUNC0 | DWI_DRIVE_STR,					// DWI_DO		->
+	CFG_FUNC0 | DWI_DRIVE_STR,					// DWI_CLK		->
+
+/* Port 24 */
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// SENSOR0_RST		-> PM_REAR_CAM_SHUTDOWN
+	CFG_OUT_0 | CAM_DRIVE_STR,					// SENSOR0_CLK		-> CLK_CAM_RF
+	CFG_OUT_1 | GPIO_DRIVE_STR,					// SENSOR1_RST		-> PM_FRONT_CAM_SHUTDOWN
+	CFG_OUT_0 | CAM_DRIVE_STR,					// SENSOR1_CLK		-> CLK_CAM_FF
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_MCK		-> I2S_AP_0_MCL (codec ASP)
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_LRCK		-> I2S_AP_0_LRCK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_BCLK		-> I2S_AP_0_BCLK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S0_DOUT		-> I2S_AP_0_DOUT
+
+/* Port 25 */
+	CFG_FUNC0,							// I2S0_DIN		-> I2S_AP_0_DIN
+	CFG_DISABLED,							// I2S1_MCK		->
+	CFG_DISABLED,							// I2S1_LRCK		->
+	CFG_DISABLED,							// I2S1_BCLK		->
+	CFG_DISABLED,							// I2S1_DOUT		->
+	CFG_DISABLED,							// I2S1_DIN		->
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_MCK		-> I2S_AP_2_MCK (codec VSP)
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_LRCK		-> I2S_AP_2_LRCK
+
+/* Port 26 */
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_BCLK		-> I2S_AP_2_BCLK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S2_DOUT		-> I2S_AP_2_DOUT
+	CFG_FUNC0,							// I2S2_DIN		-> I2S_AP_2_DIN
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_MCK		-> I2S_AP_3_MCK (codec XSP)
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_LRCK		-> I2S_AP_3_LRCK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_BCLK		-> I2S_AP_3_BCLK
+	CFG_FUNC0 | I2S_DRIVE_STR,					// I2S3_DOUT		-> I2S_AP_3_DOUT
+	CFG_FUNC0,							// I2S3_DIN		-> I2S_AP_3_DIN
+
+/* Port 27 */
+	CFG_DISABLED,							// SPDIF		->
+	CFG_OUT_0 | GPIO_DRIVE_STR,					// GPIO217		-> PORT_DOCK_VIDEO_AMP_EN
+	CFG_DISABLED,							// GPIO218		->
+	CFG_FUNC0,							// DP_HPD		-> DP_AP_HPD
+	CFG_FUNC0 | UART_DRIVE_STR,					// UART0_TXD		-> UART_AP_0_TXD
+	CFG_FUNC0,							// UART0_RXD		-> UART_AP_0_RXD
+	CFG_DISABLED,							// TST_CLKOUT		->
+	CFG_DISABLED,							// TST_STPCLK		->
+
+/* Port 28 */
+	CFG_FUNC0,							// WDOG			-> AP_WDOG
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+	CFG_DISABLED,							// 			->
+};
+
+#undef BB_DRIVE_STR
+#undef BT_DRIVE_STR
+#undef SWI_DRIVE_STR
+#undef GPS_DRIVE_STR
+#undef FMI_DRIVE_STR
+#undef SPI_DRIVE_STR
+#undef SPI_CS_DRIVE_STR
+#undef I2C_DRIVE_STR
+#undef DWI_DRIVE_STR
+#undef I2S_DRIVE_STR
+#undef SDIO_DRIVE_STR
+#undef CAM_DRIVE_STR
+#undef UART_DRIVE_STR
+#undef HI_DRIVE_STR
+#undef GPIO_DRIVE_STR

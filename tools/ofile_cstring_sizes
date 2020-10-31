@@ -1,0 +1,57 @@
+#!/usr/bin/python
+
+import string
+import subprocess
+import sys
+import os.path
+
+def ofile_section_info(path):
+    sections = []
+    otool_output = subprocess.Popen(["otool", "-l", path], stdout=subprocess.PIPE).communicate()[0]
+    for section_text in string.split(otool_output, "Section\n")[1:]:
+        section = {}
+        for field_text in string.split(section_text, "\n"):
+            field_list = string.rsplit(string.strip(field_text))
+            if len(field_list) == 2:
+                section[field_list[0]] = field_list[1]
+        sections.append(section)
+    return sections
+
+def ofile_cstring_size(path):
+    sections = ofile_section_info(path)
+    size = "0x00000000"
+    for section in sections:
+        if section['sectname'] == "__cstring" and section['segname'] == "__TEXT":
+            size = section['size']
+    pair = (size, path)
+    return pair
+
+def is_ofile(path):
+    return os.path.isfile(path) and os.path.splitext(path)[1] == ".o"
+
+def dir_visitor(size_path_pairs, dir_path, names):
+    size_path_pairs.extend(map(ofile_cstring_size, 
+                               filter(is_ofile,
+                                      map(lambda n: os.path.join(dir_path, n), names))))
+
+def main(paths):
+    size_path_pairs = []
+    for path in paths:
+        if os.path.isdir(path):
+            os.path.walk(path, dir_visitor, size_path_pairs)
+        elif is_ofile(path):
+            size_path_pairs.append(ofile_cstring_size(path))
+    for (ofile_size, ofile_path) in size_path_pairs:
+        sys.stdout.write("%s\t%s\n" % (ofile_size, ofile_path));
+
+def usage():
+    sys.stdout.write("%s path(s)...\n\n" % os.path.basename(sys.argv[0]))
+    sys.stdout.write("\tReport the cstring section sizes for each .o"
+                     " file specified and for all .o files recursively"
+                     " found under each specified directory.\n")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        usage()
+    else:
+        main(sys.argv[1:])

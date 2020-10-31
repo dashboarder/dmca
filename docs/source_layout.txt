@@ -1,0 +1,159 @@
+/apps
+	Top-level applications, typically corresponds to a deliverable.
+
+/apps/SecureROM
+	SecureROM for Darwin SoCs.
+
+/apps/iBoot
+	Multi-platform Darwin bootloader.
+
+/apps/EmbeddedIOP
+	Runtime for embedded IO processors.
+
+/arch
+	Platform architecture-specific code.
+
+/arch/arm
+	ARM-specific code.
+
+/docs
+	Optimisim.
+
+/drivers
+	Portable drivers and driver infrastructure.
+
+/drivers/apple
+	Drivers for Apple devices.
+
+/drivers/flash_nand
+	The AND flash translation layer.
+
+/drivers/flash_nor
+	NOR flash support.
+
+/drivers/power
+	PMU drivers.
+
+/drivers/primecell
+	Drivers for ARM Primecell devices.
+
+/drivers/samsung
+	Drivers for Samsung devices.
+
+/drivers/usb
+	Device-independent USB infrastructure.
+
+/include
+	Common header files.
+
+/include/drivers
+	Headers describing interfaces to drivers and common properties of drivers.
+
+/include/lib
+/include/lib/net
+/include/lib/usb
+	Library interface defintions.
+
+/include/platform
+	Generic interfaces to platform-specific functions.
+
+/include/posix
+/include/posix/sys
+	Interfaces to the Posix subset libarary.
+
+/include/sys
+	Interfaces to OS services.
+
+/lib
+	Support library.
+
+/lib/blockdev
+	Block device support.
+
+/lib/cbuf
+	Inter-thread pipe.
+
+/lib/cksum
+	Various checksum routines.
+
+/lib/devicetree
+	I/O Kit device tree support.
+
+/lib/env
+	NVRAM environment support.
+
+/lib/fs
+	Filesystems.
+
+/lib/fs/hfs
+	HFS+
+
+/lib/heap
+	Malloc and friends.
+
+/lib/image
+	Support for the Image2 and Image3 pseudo-filesystems.
+
+/lib/pki
+	cert chain validation and signature checking.
+
+/lib/libc
+	Posix libc subset.
+
+/lib/lzss
+	LZSS decompressor.
+
+/lib/macho
+	Support for the Mach-O executable format.
+
+/lib/net
+	Ethernet/IP networking.
+
+/lib/nvram
+	CHRP NVRAM support.
+
+/lib/paint
+	Simple graphics primitives.
+
+/lib/partition
+	MBR partition scheme support.
+
+/lib/syscfg
+	Support for the diagnostics/manufacturing system configuration area.
+
+/lib/tftp
+	TFTP client.
+
+/lib/usb
+	USB client code.
+
+/makefiles
+	Deliverable makefiles and infrastructure.
+
+/platform
+	SoC-specific code.  One directory per SoC, containing drivers unique to
+	the SoC, startup code, etc.
+
+/platform/s5l8720x
+	Samsung S5L8720X ("M2")
+
+/platform/s5l8920x
+	Apple S5L8920X ("H2P")
+
+/platform/s5l8930x
+	Apple S5L8930X ("H3P")
+
+/platform/s5l8940x
+	Apple S5L8940x ("H4P")
+
+/sys
+	Core OS services.
+	
+/target
+	Target-specific code.
+
+/target/s5l8720xfpga
+	FPGA board for the S5L8720X
+
+/target/s5l8920xfpga
+	FPGA board for the S5L8920X

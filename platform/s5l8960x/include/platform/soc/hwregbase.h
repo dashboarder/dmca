@@ -1,0 +1,270 @@
+/*
+ * Copyright (C) 2011-2013 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+#ifndef __PLATFORM_SOC_HWREGBASE_H
+#define __PLATFORM_SOC_HWREGBASE_H
+
+#include <platform/memmap.h>
+
+/* S5L8960X Reg Base Defs */
+
+#define AMC_BASE_ADDR			(IO_BASE + 0x000000000)		// AMC Config
+
+#define SWTCH_FAB_BASE_ADDR		(IO_BASE + 0x000800000)		// Switch Fabric Config
+
+#define CP_COM_BASE_ADDR		(IO_BASE + 0x000D00000)		// CP Common Registers
+#define CP_COM_INT_BASE_ADDR    (CP_COM_BASE_ADDR + 0x10000) // CP Common Interrupt Config Registers
+
+// XXX clarify these
+#define CP_0_DT_BASE_ADDR		(IO_BASE + 0x000D20000)		// Dup Tag Config and Debug
+#define CP_0_DT_DBG_CA0_ADDR		(IO_BASE + 0x000D30000)		// Dup Tag Debug backdoor Ram Access For CP0/CA0
+#define CP_0_CCU_CSR_BASE_ADDR		(IO_BASE + 0x000D90000)		// CTT and MIU Config and Debug
+#define CP_1_DT_BASE_ADDR		(IO_BASE + 0x000E20000)		// Dup Tag Config and Debug
+#define CP_1_DT_DBG_CA0_ADDR		(IO_BASE + 0x000E30000)		// Dup Tag Debug backdoor Ram Access For CP1/CA0
+#define CP_1_CCU_CSR_BASE_ADDR		(IO_BASE + 0x000E90000)		// CTT and MIU Config and Debug
+
+#define RGX_CR_BASE_ADDR		(IO_BASE + 0x001000000)		// G3 Rogue Space
+#define GPC_BASE_ADDR			(IO_BASE + 0x001e00000)		// G3 Power Controller Space
+
+#define IMGV42AF_AFC_AIU_BASE_ADDR	(IO_BASE + 0x001f00000)		// IMGv42AF: Local PIO Config Space of AF AIU Block
+#define IMGV42AF_AFUSR_BASE_ADDR	(IO_BASE + 0x001f02000)		// IMGv42AF: Bridge PIO Space
+
+#define CCC_ROM_TABLE_BASE_ADDR		(IO_BASE + 0x002000000)		// Cyclone ROM Table
+#define CCC_CPU0_DBG_BASE_ADDR		(IO_BASE + 0x002010000)		// Cyclone CPU0 Debug Registers
+#define CCC_CPU0_CTI_BASE_ADDR		(IO_BASE + 0x002020000)		// Cyclone CPU0 CTI Registers
+#define CCC_CPU0_PMU_BASE_ADDR		(IO_BASE + 0x002030000)		// Cyclone CPU0 PMU Registgers
+#define CCC_CPU0_TRC_BASE_ADDR		(IO_BASE + 0x002040000)		// Cyclone CPU0 TRACE Registers
+#define CCC_CPU0_SYS_BASE_ADDR		(IO_BASE + 0x002050000)		// Cyclone CPU0 Implementation Specific Registers
+#define CCC_CPU1_DBG_BASE_ADDR		(IO_BASE + 0x002110000)		// Cyclone CPU1 Debug Registers
+#define CCC_CPU1_CTI_BASE_ADDR		(IO_BASE + 0x002120000)		// Cyclone CPU1 CTI Registers
+#define CCC_CPU1_PMU_BASE_ADDR		(IO_BASE + 0x002130000)		// Cyclone CPU1 PMU Registgers
+#define CCC_CPU1_TRC_BASE_ADDR		(IO_BASE + 0x002140000)		// Cyclone CPU1 TRACE Registers
+#define CCC_CPU1_SYS_BASE_ADDR		(IO_BASE + 0x002150000)		// Cyclone CPU1 Implementation Specific Registers
+#define CCC0_SYS_BASE_ADDR		(IO_BASE + 0x002200000)		// Cyclone Core Complex Registers
+#define CCC_SOC_BUSMUX_BASE_ADDR	(IO_BASE + 0x004000000)		// AF SoC BusMux Config
+#define SOC_BUSMUX_BASE_ADDR		(IO_BASE + 0x004000000)		// AF SoC BusMux Config
+#define CCC_CAM_BUSMUX_BASE_ADDR	(IO_BASE + 0x005000000)		// AF Camera BusMux Config
+
+#define ISP_AFC_AIU_0_BASE_ADDR		(IO_BASE + 0x005B00000)		// ISP AXI to AF Bridge
+#define ISP_AFC_AIU_1_BASE_ADDR		(IO_BASE + 0x005B10000)		// ISP AXI to AF Bridge
+#define ISP_INTR2AXI_BASE_ADDR		(IO_BASE + 0x005B20000)		// ISP Interrupt to AXI Widget
+#define ISP_DART_BASE_ADDR		(IO_BASE + 0x005B22000)		// ISP DART
+#define ISP_SMMU_BASE_ADDR		(IO_BASE + 0x005B24000)		// ISP SMMU
+#define ISP_ISPCTRL_R0_BASE_ADDR	(IO_BASE + 0x005B40000)		// SISP Region 0 Control
+#define ISP_MIPI_CSI_0_BASE_ADDR	(IO_BASE + 0x005B80000)		// MIPI CSI Controller
+#define ISP_MIPI_CSI_1_BASE_ADDR	(IO_BASE + 0x005B81000)		// MIPI CSI Controller
+#define ISP_SMB_0_BASE_ADDR		(IO_BASE + 0x005B82000)		// SMB Controller
+#define ISP_SMB_1_BASE_ADDR		(IO_BASE + 0x005B83000)		// SMB Controller
+#define ISP_FD_BASE_ADDR		(IO_BASE + 0x005B84000)		// Face Detect
+#define ISP_AISP_BASE_ADDR		(IO_BASE + 0x005BA0000)		// AISP
+#define ISP_ISPCTRL_R1_BASE_ADDR	(IO_BASE + 0x005BC0000)		// SISP Region 1 Control
+#define ISP_AKF_BASE_ADDR		(IO_BASE + 0x005C00000)		// SISP KF Widgets and Config
+#define ISP_DISP_BUSMUX_BASE_ADDR	(IO_BASE + 0x006000000)		// AF Display BusMux Config
+
+#define DISP0_FAB_BASE_ADDR		(IO_BASE + 0x006100000)		// DisplayPipe0 AF and AXI Config
+#define DISP0_BASE_ADDR			(IO_BASE + 0x006200000) 	// DisplayPipe0 Frontend Config
+#define DISP0_ADBE_BASE_ADDR		(IO_BASE + 0x006300000)		// DisplayPipe0 Backend Config
+#define DISP0_AAP_BASE_ADDR		(IO_BASE + 0x006340000)		// DisplayPipe0 Ambient-Adaptive Pixel Config
+#define DISP0_DPB_BASE_ADDR		(IO_BASE + 0x006380000)		// DisplayPipe0 Pixel Backlight Config
+#define DISP0_DITHER_BASE_ADDR		(IO_BASE + 0x0063C0000)		// DisplayPipe0 Dither Config
+#define DITHER_BASE_ADDR		DISP0_DITHER_BASE_ADDR
+#define DITHER_VERSION			(3)
+#define DISP0_CM_BASE_ADDR		(IO_BASE + 0x006300000)		// DisplayPipe0 Color Manager
+#define DISP_CM_BASE_ADDR		DISP0_CM_BASE_ADDR
+
+#define DISP0_MIPI_DSI_BASE_ADDR	(IO_BASE + 0x006400000)		// DisplayPipe0 MIPI DSI Config
+#define DISP0_DPTX_BASE_ADDR		(IO_BASE + 0x006500000)		// DisplayPipe0 DisplayPort TX Config
+
+#define DISP1_FAB_BASE_ADDR		(IO_BASE + 0x006900000)		// DisplayPipe1 AF and AXI Config
+#define DISP1_BASE_ADDR			(IO_BASE + 0x006A00000) 	// DisplayPipe1 Frontend Config
+#define DISP1_ADBE_BASE_ADDR		(IO_BASE + 0x006B00000)		// DisplayPipe1 Backend Config
+#define DISP1_MEDIA_BUSMUX_BASE_ADDR	(IO_BASE + 0x007000000)		// DisplayPipe1 AF Media BusMux Config
+
+#define MSR_AFC_AIU_BASE_ADDR		(IO_BASE + 0x007800000)		// MSR AXI2AF AFC_AIU
+#define MSR_BASE_ADDR			(IO_BASE + 0x007900000)		// Memory Scalar Rotator
+#define MSR_SMMU_BASE_ADDR		(IO_BASE + 0x007904000)		// MSR SMMU
+#define MSR_DART_BASE_ADDR		(IO_BASE + 0x007908000)		// DART for MSR SMMU
+#define MSR_INTR2AXI_BASE_ADDR		(IO_BASE + 0x00790C000)		// MSR Interrupt to AXI Widget
+
+#define AJPEG_AFC_AIU_BASE_ADDR		(IO_BASE + 0x007A00000)		// AJPEG AXI2AF AFC_AIU
+#define AJPEG_INTR2AXI_BASE_ADDR	(IO_BASE + 0x007B00000)		// AJPEG Interrupt to AXI Widget
+#define AJPEG_BASE_ADDR			(IO_BASE + 0x007B01000)		// AJPEG Wrap
+#define AJPEG_DART_BASE_ADDR		(IO_BASE + 0x007B03000)		// AJPEG DART
+
+#define VXE_AFC_AIU_BASE_ADDR		(IO_BASE + 0x007C00000)		// VXE AXI2AF AFC_AIU
+#define VXE_INTR2AXI_BASE_ADDR		(IO_BASE + 0x007C01000)		// VXE Interrupt to AXI Widget
+#define VXE_PL301_BASE_ADDR		(IO_BASE + 0x007C02000)		// VXE PL301 Config
+#define VXE_CFG_BASE_ADDR		(IO_BASE + 0x007D00000)		// VXE Config Registers
+
+#define VXD_AFC_AIU_BASE_ADDR		(IO_BASE + 0x007E00000)		// VXD AXI2AF AFC_AIU
+#define VXD_INTR2AXI_BASE_ADDR		(IO_BASE + 0x007E01000)		// VXD Interrupt to AXI Widget
+#define VXD_PL301_BASE_ADDR		(IO_BASE + 0x007E02000)		// VXD PL301 Config
+#define VXD_CFG_BASE_ADDR		(IO_BASE + 0x007F00000)		// VXD Config Registers
+
+#define ANS_AFC_AIU_BASE_ADDR		(IO_BASE + 0x008000000)		// ANS AXI2AF AFC_AIU
+#define ANS_PL301_BASE_ADDR		(IO_BASE + 0x008010000)		// ANS PL301 Config
+#define ANS_AKF_PL301_TLMT_BASE_ADDR	(IO_BASE + 0x008020000)		// ANS KF Transaction Limit Widget
+#define ANS_AKF_INTR2AXI_BASE_ADDR	(IO_BASE + 0x008021000)		// ANS KF Interrupt to AXI Widget
+#define ANS_ANC_PL301_TLMT_0_BASE_ADDR	(IO_BASE + 0x008030000)		// ANS NAND Controller Transaction Limit Widget
+#define ANS_ANC_PL301_TLMT_1_BASE_ADDR	(IO_BASE + 0x008031000)		// ANS NAND Controller Transaction Limit Widget
+#define ANS_ANC_INTR2AXI_0_BASE_ADDR	(IO_BASE + 0x008038000)		// ANS NAND Controller Interrupt to AXI Widget
+#define ANS_ANC_INTR2AXI_1_BASE_ADDR	(IO_BASE + 0x008039000)		// ANS NAND Controller Interrupt to AXI Widget
+#define ANS_AKF_BASE_ADDR		(IO_BASE + 0x008040000)		// ANS KF Wrapper
+// XXX AKF DBG (IO_BASE + 0x008060000) - (IO_BASE + 0x008070000)
+#define ANS_CFG_BASE_BADDR		(IO_BASE + 0x008080000)		// ANS Config
+#define ANS_PPN_N_PL_BASE_ADDR		(IO_BASE + 0x008081000)		// ANS PPN-N-PL Config
+#define ANS_ANC_BASE_ADDR		(IO_BASE + 0x008700000)		// ANC Broadcast writes to all ANCs
+#define ANS_ANC_0_BASE_ADDR		(IO_BASE + 0x008800000)		// ANS NAND Controller 0
+#define ANS_ANC_1_BASE_ADDR		(IO_BASE + 0x008900000)		// ANS NAND Controller 1
+#define ANS_IO_BUSMUX_BASE_ADDR		(IO_BASE + 0x009000000) 	// ANS AF IO BusMux Config
+
+#define IOBUSMUX_BASE_ADDR		(IO_BASE + 0x009000000)		// IO BusMux Config
+
+#define SB_BASE_ADDR			(IO_BASE + 0x00A000000)		// South Bridge
+
+#define ASIO_MISC_0_BASE_ADDR		(IO_BASE + 0x00A000000)		// ASIO Shim0 Misc Registers
+#define ASIO_AUD_MUX_BASE_ADDR		(IO_BASE + 0x00A005000)		// ASIO Audio I2S Switch Config 
+#define ASIO_SPI_BASE_ADDR		(IO_BASE + 0x00A080000)		// ASIO SPI Device
+#define ASIO_SPI_TX_CFG_BASE_ADDR	(IO_BASE + 0x00A081000)		// ASIO SPI TX DMA Channel
+#define ASIO_SPI_RX_CFG_BASE_ADDR	(IO_BASE + 0x00A081800)		// ASIO SPI RX DMA Channel
+#define ASIO_SPI_TX_FIFO_BASE_ADDR	(IO_BASE + 0x00A082000)		// ASIO SPI TX DMA Shim FIFO
+#define ASIO_SPI_RX_FIFO_BASE_ADDR	(IO_BASE + 0x00A083000)		// ASIO SPI RX DMA Shim FIFO
+#define ASIO_UART_BASE_ADDR		(IO_BASE + 0x00A0A0000)		// ASIO UART Device
+#define ASIO_UART_TX_CFG_BASE_ADDR	(IO_BASE + 0x00A0A1000)		// ASIO UART TX DMA Channel
+#define ASIO_UART_RX_CFG_BASE_ADDR	(IO_BASE + 0x00A0A1800)		// ASIO UART RX DMA Channel
+#define ASIO_UART_TX_FIFO_BASE_ADDR	(IO_BASE + 0x00A0A2000)		// ASIO UART TX DMA Shim FIFO
+#define ASIO_UART_RX_FIFO_BASE_ADDR	(IO_BASE + 0x00A0A3000)		// ASIO UART RX DMA Shim FIFO
+#define ASIO_MCA_BASE_ADDR		(IO_BASE + 0x00A0C0000)		// ASIO MCA Device
+#define ASIO_MCA_TX_CFG_BASE_ADDR	(IO_BASE + 0x00A0C1000)		// ASIO MCA TX DMA Channel
+#define ASIO_MCA_RX_CFG_BASE_ADDR	(IO_BASE + 0x00A0C1800)		// ASIO MCA RX DMA Channel
+#define ASIO_MCA_TX_FIFO_BASE_ADDR	(IO_BASE + 0x00A0C2000)		// ASIO MCA TX DMA Shim FIFO
+#define ASIO_MCA_RX_FIFO_BASE_ADDR	(IO_BASE + 0x00A0C3000)		// ASIO MCA RX DMA Shim FIFO
+#define ASIO_MISC_1_BASE_ADDR		(IO_BASE + 0x00A100000)		// ASIO Shim1 Misc Registers
+#define ASIO_AES_BASE_ADDR		(IO_BASE + 0x00A108000)		// ASIO AES Config and DMA Registers
+#define ASIO_SMB_0_BASE_ADDR		(IO_BASE + 0x00A110000)		// ASIO I2C 0 Device
+#define ASIO_SMB_1_BASE_ADDR		(IO_BASE + 0x00A111000)		// ASIO I2C 1 Device
+#define ASIO_SMB_2_BASE_ADDR		(IO_BASE + 0x00A112000)		// ASIO I2C 2 Device
+#define ASIO_SMB_3_BASE_ADDR		(IO_BASE + 0x00A113000)		// ASIO I2C 3 Device
+#define ASIO_PWM_BASE_ADDR		(IO_BASE + 0x00A118000)		// ASIO PWM
+#define ASIO_SEP_UART_0_BASE_ADDR	(IO_BASE + 0x00A11C000)		// ASIO SCR Device 0
+#define ASIO_SEP_UART_1_BASE_ADDR	(IO_BASE + 0x00A11D000)		// ASIO SCR Device 1
+#define ASIO_AKF_BASE_ADDR		(IO_BASE + 0x00AE00000)		// ASIO KF Wrapper
+// XXX ASIO AKF DBG
+
+#define ADSP_BASE_ADDR			(IO_BASE + 0x00B000000)		// Audience Core
+
+#define AUSB_CTL_REG_BASE_ADDR		(IO_BASE + 0x00C000000)		// USBCTL Config
+#define AUSB_CTL_USB20PHY_REG_OFFSET	(0x20)				// USB20PHY Register offset within AUSBCTL registers
+#define AUSB_OTG_BASE_ADDR		(IO_BASE + 0x00C100000)		// USB OTG
+#define AUSB_USB2HOST0_EHCI_BASE_ADDR	(IO_BASE + 0x00C200000)		// EHCI0
+#define AUSB_USB2HOST0_OHCI_BASE_ADDR	(IO_BASE + 0x00C300000)		// OHCI0
+#define AUSB_USB2HOST1_EHCI_BASE_ADDR	(IO_BASE + 0x00C400000)		// EHCI1
+#define AUSB_USB2HOST1_OHCI_BASE_ADDR	(IO_BASE + 0x00C500000)		// OHCI1
+#define AUSB_PL301_BASE_ADDR		(IO_BASE + 0x00C800000)		// AUSB PL301 4-AHB Master to 1-AXI Slave
+#define AUSB_PL301_WIDGET_BASE_ADDR	(IO_BASE + 0x00C900000)		// AUSB PL301 Widget
+#define AUSB_INTR2AXI_BASE_ADDR		(IO_BASE + 0x00CA00000)		// AUSB Interrupt to AXI Widget
+#define AUSB_AFIFO_WIDGET_BASE_ADDR	(IO_BASE + 0x00CB00000)		// AUSB Async FIFO
+
+#define ASEP_AKF_BASE_ADDR		(IO_BASE + 0x00D000000)		// ASEP AKF control Registers
+
+#define PMGR_BASE_ADDR			(IO_BASE + 0x00E000000)		// PMGR
+
+#define AIC_BASE_ADDR			(IO_BASE + 0x00E100000)		// AIC
+#define AIC_WIRE_VIRT_BASE_ADDR		(IO_BASE + 0x00E110000)		// AIC Wrapper
+
+#define DWI_BASE_ADDR			(IO_BASE + 0x00E200000)		// DWI
+
+#define GPIO_BASE_ADDR			(IO_BASE + 0x00E300000)		// GPIO
+
+#define AMPS_0_DQ_BASE_ADDR		(IO_BASE + 0x00E400000)		// AMP 0 DQ DRAM PHY
+#define AMPS_0_CA_BASE_ADDR		(IO_BASE + 0x00E410000)		// AMP 0 CA DRAM PHY
+#define AMPS_1_DQ_BASE_ADDR		(IO_BASE + 0x00E420000)		// AMP 1 DQ DRAM PHY
+#define AMPS_1_CA_BASE_ADDR		(IO_BASE + 0x00E430000)		// AMP 1 CA DRAM PHY
+
+#define LIO_MEM_PL301_BASE_ADDR		(IO_BASE + 0x00E900000)		// PL310 for pd_lio memory
+#define LIO_PIO_PL310_BASE_ADDR		(IO_BASE + 0x00E940000)		// PL310 for pd_lio PIO
+#define LIO_SIO_AFIFO_WIDGETS_BASE_ADDR	(IO_BASE + 0x00E9C0000)		// SIO Async FIFO for pd_lio
+#define LIO_DAP_AFIFO_WIDGETS_BASE_ADDR	(IO_BASE + 0x00E9C8000)		// SIO Async FIFO for pd_lio
+#define LIO_AFC_AIU_BASE_ADDR		(IO_BASE + 0x00F010000)		// LIO AXI to AF Bridge
+
+#define DBG_WRP_BASE_ADDR		(IO_BASE + 0x00F000000)		// Debug Sub-system Config
+
+/* iBoot Specific Defs */
+
+#define AKF_VERSION			(1)
+
+#define UART0_BASE_ADDR			(ASIO_UART_BASE_ADDR)
+#define UART1_BASE_ADDR			(ASIO_UART_BASE_ADDR + 0x04000)
+#define UART2_BASE_ADDR			(ASIO_UART_BASE_ADDR + 0x08000)
+#define UART3_BASE_ADDR			(ASIO_UART_BASE_ADDR + 0x0C000)
+#define UART4_BASE_ADDR			(ASIO_UART_BASE_ADDR + 0x10000)
+#define UART5_BASE_ADDR			(ASIO_UART_BASE_ADDR + 0x14000)
+#define UART6_BASE_ADDR			(ASIO_UART_BASE_ADDR + 0x18000)
+#define UARTS_COUNT			(7)
+#define UART_VERSION			(1)
+
+#define SPI0_BASE_ADDR			(ASIO_SPI_BASE_ADDR)
+#define SPI1_BASE_ADDR			(ASIO_SPI_BASE_ADDR + 0x04000)
+#define SPI2_BASE_ADDR			(ASIO_SPI_BASE_ADDR + 0x08000)
+#define SPI3_BASE_ADDR			(ASIO_SPI_BASE_ADDR + 0x0C000)
+#define SPI_VERSION			(1)
+#define SPIS_COUNT			(4)
+
+#define IIC_BASE_ADDR			(ASIO_SMB_0_BASE_ADDR)
+#define IIC_SPACING			(0x00001000)
+#define IICS_COUNT			(4)
+
+#define USBPHY_VERSION			(4)
+
+#define DSIM_BASE_ADDR			(DISP0_MIPI_DSI_BASE_ADDR)
+#define DSIM_LANE_COUNT			(4)
+#define DSIM_VERSION			(2)
+
+#define EDP_BASE_ADDR			(DISP0_DPTX_BASE_ADDR)
+#define DP_BASE_ADDR			(EDP_BASE_ADDR)
+#define DISPLAYPORT_VERSION		(3)
+
+#define ADBE_DISPLAYPIPE_BASE_ADDR	(DISP0_BASE_ADDR)
+#define DISP_VERSION			(5)
+
+#define AMP_BASE_ADDR			(AMPS_0_DQ_BASE_ADDR)
+#define AMP_SPACING			(0x00020000)
+#define AMP_CA_SPACING			(0x00010000)
+
+#define CHIPID_BASE_ADDR		(PMGR_BASE_ADDR + 0x2A000)
+
+#define GPIO_VERSION			(3)
+#define GPIO_GROUP_COUNT		(25)
+#define GPIO_PAD_SPI                    (GPIO_GROUP_COUNT)
+
+#define AIC_VERSION			(1)
+#define AIC_INT_COUNT			(192)
+
+#define PMGR_WDG_VERSION		(1)
+
+#define USBOTG_BASE_ADDR		(AUSB_OTG_BASE_ADDR)
+
+#define AES_AP_BASE_ADDR		(ASIO_AES_BASE_ADDR)
+#define AES_AP_VERSION			(0)
+
+#if SUB_PLATFORM_S5L8970X
+#define DART0_BASE_ADDR			(PCI_BASE + 0x1002000)
+#define DART1_BASE_ADDR			(PCI_BASE + 0x2002000)
+#define DART2_BASE_ADDR			(PCI_BASE + 0x3002000)
+#define DART3_BASE_ADDR			(PCI_BASE + 0x4002000)
+
+#define PCIE_PORT0_DART_ID		(0)
+#define PCIE_PORT1_DART_ID		(1)
+#define PCIE_PORT2_DART_ID		(2)
+#define PCIE_PORT3_DART_ID		(3)
+#define NUM_DARTS			(4)
+#endif
+
+#endif /* ! __PLATFORM_SOC_HWREGBASE_H */

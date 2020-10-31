@@ -1,0 +1,78 @@
+Image3 PKI Interface
+====================
+
+The Image3 format defines support for the use of Public Key Cryptography digital signature
+techniques.
+
+The implementation in turn depends on an external interface to provide this support.  This document
+describes the interface.
+
+
+Signature Generation
+--------------------
+It is assumed that the signature generation process will take as input a cryptographic hash (SHA-1)
+and produce a signed object.
+
+In addition, a certificate chain may be supplied that will be enclosed in the Image3 container and
+made available to the signature verification phase.
+
+extern int
+image3PKISignHash(
+	void *hashBuffer,
+	size_t hashSize,
+	void **resultPointer,
+	size_t *resultSize,
+	void **certBlobPointer, 
+	size_t *certBlobSize)
+
+
+Populates the result buffer with a signed version of the supplied hash.
+
+Additionally obtains a pointer to a buffer containing the certificate chain blob, which will be
+supplied to the verification code as-is.
+
+TBD: result pointers to static buffers? allocated data?
+
+
+Signature Verification
+----------------------
+The signature verification process is expected to verify the correctness of a hash calculated by the
+Image3 parser.
+
+If available at signing time, the certificate chain blob will also be supplied at verification time.
+
+extern int
+image3PKIVerifyHash(
+	void *hashBuffer,
+	size_t hashSize,
+	void *signedHashBuffer,
+	size_t signedHashSize,
+	void *certBlobBuffer,
+	size_t certBlobSize,
+	void **certCustomData,
+	size_t *certCustomDataSize)
+
+Verifies that the hash in hashBuffer corresponds to the signed hash in signedHashBuffer.  If
+supplied, may use the contents of the certBlobBuffer in order to perform this verification.
+
+Additionally, if the cert chain contains custom data (e.g. in the Common Name field or elsewhere)
+this can be returned via *certCustomData.  Such custom data will have been supplied at the time that
+the certificate chain was assembled (most likely at the point where the leaf certificate is
+generated).
+
+TBD specific results.
+
+Hash Generation
+---------------
+SHA-1 hashes for validation are generated using an external interfaace.
+
+extern int
+image3SHA1Generate(void *dataBuffer, size_t dataSize, void *hashBuffer)
+
+extern int
+image3AESDecrypt(void *sourceBuffer, void *dataBuffer, void *keyBuffer, void *ivBuffer,
+int keySize);
+
+extern int
+image3AESEncrypt(void *sourceBuffer, void *dataBuffer, void *keyBuffer, void *ivBuffer,
+int keySize);

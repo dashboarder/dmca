@@ -1,0 +1,39 @@
+#!/bin/zsh
+
+function make-img3-spec()
+{
+	TEMP_FILE=tmp$$
+	image3maker --create --imagefile "${TEMP_FILE}.img3" --type cert $*
+	if [ $? -ne 0 ]; then exit 1; fi
+	FILESIZE=$(wc -c < "${TEMP_FILE}.img3")
+	if [ ${FILESIZE} -gt 127 ]; 
+		then echo script too dumb to encode asn.1 length greater than 127
+		exit 1
+	fi
+	printf "1.2.840.113635.100.6.1.1=critical,DER:04:%02X" ${FILESIZE}
+	od -vt x1 "${TEMP_FILE}.img3" |\
+		sed -e 's/^[0-9a-f]*//g' -e 's/ *\([0-9a-f][0-9a-f]\)/:\1/g' |\
+		tr -d ' \n'
+	echo
+	rm ${TEMP_FILE}.img3
+}
+
+GENERAL_SPEC="keyUsage = digitalSignature
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always"
+
+echo "[ spec-dev-8720-darwin ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --development --chipType 0x8720 --domain darwin )
+echo
+echo "[ spec-dev-8720-manu ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --development --chipType 0x8720 --domain manufacturer )
+echo
+echo "[ spec-dev-8920-darwin ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --development --chipType 0x8920 --domain darwin )
+echo
+echo "[ spec-prod-8720-darwin ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --production --chipType 0x8720 --domain darwin )
+echo
+echo "[ spec-dev-8720-darwin-wrong-epoch ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --development --chipType 0x8720 --domain darwin --epoch 1)
+echo
+echo "[ spec-dev-8720-darwin-wrong-boardid ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --development --chipType 0x8720 --domain darwin --boardID 1 )
+echo
+echo "[ spec-dev-8720-darwin-wrong-ecid ]"; echo ${GENERAL_SPEC}; echo $(make-img3-spec --development --chipType 0x8720 --domain darwin --uniqueID 0 )
+echo
+

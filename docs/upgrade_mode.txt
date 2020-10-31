@@ -1,0 +1,67 @@
+iBoot Upgrade Mode
+==================
+
+The iBoot application normally insists on booting from the first
+partition on the storage device, using a kernelcache located in
+/System/Library/Caches/com.apple.kernelcaches/kernelcache, with a
+devicetree located in ROM and with the first partition as the root
+device.
+
+Upgrade mode provides an alternative boot path suitable for booting a
+standalone restore/recovery system.  It chains to a new bootloader,
+and the new bootloader then loads kernelcache, devicetree, ramdisk and
+optionally a display image before booting the kernelcache.
+
+To invoke upgrade mode, the boot-command variable must be set to
+'upgrade', and the upgrade partition must contain the following files:
+
+ /iBEC
+ /kernelcache
+ /devicetree 
+ /ramdisk
+ /apticket.der
+
+being the appropriate iBoot iBEC component, kernelcache, device tree,
+ramdisk and personalised AP ticket for the system.  In addition if the
+file /logo is present, it will be displayed by the iBEC before the other
+components are loaded.
+
+When the kernelcache is booted, the RELEASE-configured iBEC will force
+the boot-args variable to:
+
+  'rd=md0 nand-enable-reformat=1 -progress'
+
+Non-RELEASE configurations will add 'rd=md0' to boot-args but
+otherwise preserve its contents.  In neither case is the value saved
+to NVRAM.
+
+All of the files listed above are expected to be in their usual
+(image3) format, and must be signed and/or personalised as normal.
+
+Both iBoot and the upgrade iBEC will identify the upgrade partition by
+its LwVM partition name, which must be 'Update'.
+
+If any of the following occurs, the unit will end up in the ROM
+iBoot in recovery mode:
+
+ - the upgrade partition does not exist or cannot be mounted
+ - the file /iBEC does not exist in the upgrade partition
+ - the contents of the iBEC file are not an Image3 file or fail
+   authentication
+
+If any of the following occurs, the unit will end up in the upgrade
+iBEC in recovery mode:
+
+ - the upgrade partition cannot be mounted (e.g. due to NAND
+   format incompatibility)
+ - the files /kernelcache, /devicetree and /ramdisk do not exist
+   in the upgrade partition
+ - the contents of any of these files are not valid Image3, or
+   fail authentication
+ - the kernelcache file does not contain a compressed mach-o 
+   kernelcache
+ - the devicetree file does not contain a valid devicetree
+
+The iBEC component will set the auto-boot variable to false when
+loaded in upgrade mode, to avoid the risk of locking the unit up due
+to a hang while booting the upgrade kernel.

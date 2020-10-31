@@ -1,0 +1,9 @@
+Table of Contents:
+
+README			          - this file, containing an overview of the contents of the AppleEffaceableStorage project
+AppleEffaceableStorage.xcodeproj  - xcode project definition bundle for building iokit driver and ios utility command
+common                            - portable core of the effaceable storage implementation, common to all build contexts
+docs                              - various notes and (coming soon) design documents discussing effaceable storage
+iboot                             - code specific to hosting portable core in iBoot context
+iokit                             - code specific to hosting portable core in IOKit context
+ios                               - code providing 'effaceable' command line utility in iOS; used only for user client example and internal development

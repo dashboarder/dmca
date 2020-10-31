@@ -1,0 +1,100 @@
+#!/usr/bin/tclsh
+################################################################################
+#
+# Given a path to a mach-o binary and input that includes stack backtraces in
+# the format printed by iBoot's arch_backtrace_task, annotate the backtraces
+# with symbol names
+#
+# Lines in the backtrace have the form
+#
+# <whitespace><token><whitespace><hex number><hex number><newline>
+# or
+# <whitespace><hex number><hex number><newline>
+#
+
+proc main { } {
+    global argv
+
+    set binfile [lindex $argv 0]
+    if {![file readable $binfile]} {
+     	puts "can't read '$binfile'"
+	exit 1
+    }
+
+    # run nm and parse the output
+    do_nm $binfile
+
+    # read input lines
+    while {[gets stdin line] != -1} {
+	puts -nonewline $line
+	if {([scan $line " %s %x %x%n" pad pc lr len] == 4) || ([scan $line " %x %x%n" pc lr len] == 3)} {
+	    if {$len == [string length $line]} {
+		set detail [find_sym $pc]
+		if {$detail != ""} {
+		    puts -nonewline " ($detail)"
+		}
+	    }
+	}
+	puts ""
+    }
+}
+
+proc do_nm {binfile} {
+
+    global symbols
+    global symbol_index
+
+#    puts "reading symbols from $binfile"
+
+    set lines [exec nm -n $binfile]
+
+    foreach {_addr type _sym} $lines {
+	set sym [string range $_sym 1 end]
+	set addr "0x$_addr"
+	set symbols($addr) $sym
+    }
+    set symbol_index [lsort -integer [array names symbols]]
+
+#    puts "[llength [array names symbols]] symbols"
+}
+
+proc find_sym {pc} {
+
+    global symbols
+    global symbol_index
+
+#    puts "looking for $pc"
+
+    set candidate [lindex $symbol_index 0]
+
+    # if the pc is before the first symbol, it's not in the object file
+    if {$pc < $candidate} {
+#	puts "too low (less than $candidate)"
+	return ""
+    }
+
+    foreach addr [lrange $symbol_index 1 end] {
+
+#	puts "trying $addr"
+
+	# if the next symbol is above the pc, the candidate is where we are
+	if {$pc < $addr} {
+	    break
+	}
+
+	# advance the candidate
+	set candidate $addr
+    }
+
+    # the last symbol is a sentinel, if the PC is above it, it's not in the object file
+    if {$pc > $addr} {
+#	puts "too high"
+	return ""
+    }
+
+    set key [format 0x%08x $candidate]
+    set offset [format 0x%x [expr $addr - $key]]
+    return "$symbols($key)+$offset"
+}
+
+main

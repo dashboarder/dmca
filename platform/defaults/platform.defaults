@@ -1,0 +1,135 @@
+#
+# Copyright (C) 2007-2015 Apple Inc. All rights reserved.
+#
+# This document is the property of Apple Inc.
+# It is considered confidential and proprietary.
+#
+# This document may not be reproduced or transmitted in any form,
+# in whole or in part, without the express written permission of
+# Apple Inc.
+#
+#
+# This file describes default implementations of platform functions.
+#
+# Each line comprises five fields, separated by "<whitespace>:<whitespace>"
+#
+# The fields are:
+#
+# <tag> : <return type> : <function name> : <argument list> : <return expression>
+#
+# The tag field indicates whether the function is independent (INDEP) of or dependent (DEP) on the
+# build configuration.  Functions marked INDEP are built into a static library keyed off
+# LIBRARY_TAG; functions marked DEP are built into a static library for every build pass.
+
+# chipid
+INDEP	: bool		: chipid_get_production_mode		: void : false
+INDEP	: bool		: chipid_get_current_production_mode	: void : chipid_get_production_mode()
+INDEP	: void		: chipid_clear_production_mode		: void :
+INDEP	: bool		: chipid_get_secure_mode		: void : false
+INDEP	: u_int32_t	: chipid_get_security_domain		: void : kPlatformSecurityDomainDarwin
+INDEP	: u_int32_t	: chipid_get_minimum_epoch		: void : 0
+INDEP	: u_int32_t	: chipid_get_chip_id			: void : 0
+INDEP	: u_int32_t	: chipid_get_chip_revision 		: void : 0
+INDEP	: u_int64_t	: chipid_get_ecid_id			: void : 0
+INDEP	: u_int64_t	: chipid_get_die_id			: void : 0
+INDEP	: uint32_t	: chipid_get_fuse_revision		: void : 0
+INDEP	: void		: chipid_set_fuse_lock			: bool locked :
+INDEP	: bool		: chipid_get_memory_dqcal		: u_int32_t *cal_data : false
+INDEP	: u_int32_t	: chipid_get_memory_manufacturer	: void : 0
+
+# platform
+INDEP	: bool		: platform_get_current_production_mode	: void : chipid_get_current_production_mode()
+INDEP	: bool		: platform_get_raw_production_mode	: void : chipid_get_raw_production_mode()
+INDEP	: void		: platform_clear_production_mode	: void : chipid_clear_production_mode()
+INDEP	: int		: platform_early_init			: void : 0
+INDEP	: int		: platform_init				: void : 0
+INDEP	: int		: platform_late_init			: void : 0
+INDEP	: int		: platform_debug_init			: void : 0
+INDEP	: int		: platform_init_hwpins			: void : 0
+INDEP	: int		: platform_init_internal_mem		: void : 0
+INDEP	: int		: platform_init_display			: void : 0
+INDEP	: int		: platform_init_display_mem		: addr_t *base, size_t *size : 0
+INDEP	: int		: platform_init_setup_clocks		: void : 0
+INDEP	: int		: platform_init_power			: void : 0
+INDEP	: int		: platform_init_mass_storage		: void : 0
+INDEP	: int		: platform_init_mass_storage_panic	: void : 0
+INDEP	: void		: platform_mmu_setup			: bool resume :
+INDEP	: u_int32_t	: platform_get_boot_config		: void : 0
+INDEP	: u_int32_t	: platform_get_board_id			: void : 0
+INDEP	: u_int32_t	: platform_get_security_domain		: void : chipid_get_security_domain()
+INDEP	: bool		: platform_get_secure_mode		: void : chipid_get_secure_mode()||chipid_get_raw_production_mode()
+INDEP	: bool		: platform_get_core_idle_enable		: void : true
+INDEP	: bool		: platform_get_ecid_image_personalization_required	: void : false
+INDEP	: u_int32_t	: platform_get_hardware_epoch		: void : chipid_get_minimum_epoch()
+INDEP	: u_int64_t	: platform_get_nonce			: void : 0
+INDEP	: u_int32_t	: platform_get_chip_id			: void : chipid_get_chip_id()
+INDEP	: u_int32_t	: platform_get_chip_revision		: void : chipid_get_chip_revision()
+INDEP	: u_int64_t	: platform_get_ecid_id			: void : chipid_get_ecid_id()
+INDEP	: u_int64_t	: platform_get_die_id			: void : chipid_get_die_id()
+INDEP	: u_int32_t	: platform_get_fuse_revision		: void : chipid_get_fuse_revision()
+INDEP	: u_int32_t	: platform_get_entropy			: void : timer_get_entropy()
+INDEP	: u_int16_t	: platform_get_usb_vendor_id		: void : 0x05ac
+INDEP	: void		: platform_set_dfu_status		: bool dfu : 
+INDEP	: bool		: platform_get_force_dfu		: void : false
+INDEP	: bool		: platform_get_request_dfu1		: void : false
+INDEP	: bool		: platform_get_request_dfu2		: void : false
+INDEP	: bool		: platform_get_lock_fuses_required	: void : true
+INDEP	: uint32_t	: platform_get_pcie_link_width		: uint32_t link : 0
+INDEP	: bool		: platform_set_usb_brick_detect		: int select : false
+INDEP	: void		: platform_halt				: void : arch_halt()
+INDEP	: void		: platform_deep_idle			: void : platform_halt()
+INDEP	: int		: platform_quiesce_display		: void : 0
+INDEP	: int		: platform_update_device_tree		: void : 0
+INDEP	: void		: platform_sleep			: void : 
+INDEP	: const char *	: platform_get_usb_manufacturer_string	: void : "Apple Inc."
+INDEP	: u_int16_t	: platform_get_usb_device_version	: void : 0
+INDEP	: int		: platform_init_mainmem			: bool resume : 0
+INDEP	: void		: platform_init_mainmem_map		: void :
+INDEP	: int		: platform_bootprep			: enum boot_target target : 0
+INDEP	: int		: platform_quiesce_hardware		: enum boot_target target : 0
+INDEP	: u_int32_t	: platform_set_performance		: u_int32_t level : kPerformanceHigh
+INDEP	: bool		: platform_provide_spec_blob		: const void *common_name, const size_t common_name_length, const void *serial_number, const size_t serial_number_length, void **spec_blob, size_t *spec_blob_length : false
+INDEP	: void		: platform_watchdog_tickle		: void :
+INDEP	: u_int32_t	: platform_get_base_cpu_voltage		: void : 0
+INDEP	: u_int32_t	: platform_get_base_ram_voltage		: void : 0
+INDEP	: int		: platform_get_cpu_voltages		: u_int32_t count, u_int32_t *voltages : -1
+INDEP	: int		: platform_get_cpu_min_voltages		: u_int32_t count, u_int32_t *voltages : -1
+INDEP	: int		: platform_get_ram_voltages		: u_int32_t count, u_int32_t *voltages : -1
+INDEP	: int		: platform_get_gpu_ram_voltages		: u_int32_t count, u_int32_t *voltages : -1
+INDEP	: int		: platform_convert_voltages		: int buck, u_int32_t count, u_int32_t *voltages : -1
+INDEP	: bool		: platform_is_pre_lpddr4		: void : true
+INDEP	: u_int64_t	: platform_get_memory_size		: void : 0
+INDEP	: void		: platform_set_memory_info		: u_int8_t manuf_id, u_int64_t memory_size :
+INDEP	: u_int8_t	: platform_get_memory_manufacturer_id	: void : 0
+INDEP	: void		: platform_asynchronous_exception	: void :
+INDEP	: void		: platform_adjust_memory_layout		: void : 
+INDEP	: uint64_t	: platform_map_host_to_pci_bus_addr	: uintptr_t addr : addr
+INDEP	: void		: platform_setup_default_environment	: void : target_setup_default_environment()
+INDEP	: void *	: platform_get_boot_trampoline		: void : 0
+INDEP	: size_t 	: platform_get_display_memory_size	: void : 0
+
+# target
+INDEP	: color_policy_t *	: target_color_map_init		: enum colorspace cs, color_policy_t *color_policy : NULL
+INDEP	: void		: target_early_init			: void :
+INDEP	: void		: target_init				: void :
+INDEP	: void		: target_late_init			: void :
+INDEP	: int		: target_debug_init			: void : 0
+INDEP	: void		: target_quiesce_hardware		: void :
+INDEP	: bool		: target_should_poweroff		: bool at_boot : false
+INDEP	: bool		: target_should_recover			: void : false
+INDEP	: void		: target_setup_default_environment	: void :
+INDEP	: int		: target_bootprep			: enum boot_target target : 0
+INDEP	: int		: target_update_device_tree		: void : 0
+INDEP	: void		: target_set_led			: int color : 
+INDEP	: void		: target_watchdog_tickle		: void :
+INDEP	: void		: target_debug				: int code : 
+INDEP	: u_int32_t	: target_lookup_backlight_cal		: int index : 0
+INDEP	: int		: target_dclr_from_clrc			: uint8_t *buffer, size_t size : -1
+INDEP	: u_int8_t	: target_lm3534_gpr			: u_int32_t ctlr : 3
+INDEP	: void * 	: target_get_display_configuration	: void : 0
+
+# application (these really belong somewhere else)
+INDEP	: bool		: env_blacklist				: const char *var, bool write : false
+INDEP	: bool		: env_blacklist_nvram			: const char *var : false
+INDEP	: bool		: security_allow_memory			: const void *address, size_t length : false
+INDEP	: bool		: syscfg_find_tag			: uint32_t tag, void **data, uint32_t *size : false

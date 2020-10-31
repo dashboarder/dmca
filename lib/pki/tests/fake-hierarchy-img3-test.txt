@@ -1,0 +1,86 @@
+
+Getting set up with the fake hierarchy:
+
+Modify lib/pki/rules.mk: set PKI_APPLE_ROOT_CA=0 to switch to the fake hierarchy and build a debug app test, ie. iBSS.
+Load the various images
+Get the keys and certs and CSRs from lib/pki/fake_ca.h for the intermediate: intermediate-cert.pem intermediate-key.pem, put them into separate .pem files.  
+Convert intermediate-cert.pem  to der using openssl x509 -in intermediate-cert.pem -outform der -out intermediate-cert.der.
+
+The USB_SERIAL_NUMBER header contains the board specific info, you may need to modify.
+
+Useful images to create:
+
+Images that try to set the current settings.  Production status, chip and security domain should never be set by image itself.
+
+img-dev-sdom-chip			--development --chipType 0x8720 --domain darwin
+img-dev-sdom-chip-epoch		--development --chipType 0x8720 --domain darwin --epoch 0
+img-dev-sdom-chip-boardid 	--development --chipType 0x8720 --domain darwin --boardID 0
+img-dev-sdom-chip-uniqueid	--development --chipType 0x8720 --domain darwin --uniqueID 0x????
+
+One image to make sure the production switch works as expected. Modify chipid_get_production_mode in platform/*/chipid/chipid.c to simulate a production unit.
+
+img-prod-sdom-chip		--production --chipType 0x8720 --domain darwin
+
+One leaf for the current settings:
+
+spec-dev-8720-darwin	--development --chipType 0x8720 --domain darwin
+
+Leafs that modifies one of the settings away from the default (always supposed to come from the cert)
+
+spec-dev-8720-manu	--development --chipType 0x8720 --domain manufacturer
+spec-dev-8920-darwin	--development --chipType 0x8920 --domain darwin
+spec-prod-8720-darwin	--production --chipType 0x8720 --domain darwin
+
+Leafs that modify epoch, boardid or ecid, away from the default (okay for the image to specify if cert doesn't)
+
+spec-dev-8720-darwin-wrong-epoch	--development --chipType 0x8720 --domain darwin --epoch 1
+spec-dev-8720-darwin-wrong-boardid	--development --chipType 0x8720 --domain darwin --boardID 1
+spec-dev-8720-darwin-wrong-ecid	--development --chipType 0x8720 --domain darwin --uniqueID 0
+
+Tests of image and leaf combinations:
+
+spec-dev-8720-darwin	img-dev-sdom-chip 	OK
+spec-dev-8720-manu	img-dev-sdom-chip		FAIL
+spec-dev-8920-darwin	img-dev-sdom-chip		FAIL
+spec-prod-8720-darwin	img-dev-sdom-chip		OK
+spec-prod-8720-darwin	img-dev-sdom-chip		OK * board set to return production
+spec-dev-8720-darwin	img-prod-sdom-chip	FAIL * board set to return production
+spec-dev-8720-darwin-wrong-epoch	img-dev-sdom-chip-epoch 	FAIL
+spec-dev-8720-darwin-wrong-boardid 	img-dev-sdom-chip-boardid	FAIL
+spec-dev-8720-darwin-wrong-ecid	img-dev-sdom-chip-uniqueid	FAIL (w/ 32 bit clipped ECID)
+
+Make img3 specs and put them into the extensions.txt file used during signing:
+
+make-img3-specs is a shell script that converts img3 blobs into spec extensions to be used when signing.
+
+make-img3-specs > extensions.txt
+
+Generating one key that will be shared for all issued leafs:
+
+openssl req -newkey rsa:1024 -sha1 -days 365 -sha1 \
+	-subj "/C=US/O=Apple Inc./OU=Apple Secure Boot Certification Authority/CN=S5L8900 Secure Boot" \
+	-nodes -out leaf-csr.pem -keyout leaf-key.pem
+(note: common name is not checked in leaf - platform is derived from embedded img3)
+
+Sign all leafs:
+
+for i in spec-dev-8720-darwin spec-dev-8720-manu spec-dev-8920-darwin spec-prod-8720-darwin \
+        spec-dev-8720-darwin-wrong-epoch spec-dev-8720-darwin-wrong-boardid spec-dev-8720-darwin-wrong-ecid;
+do
+	openssl x509 -req -sha1 -in leaf-csr.pem -CA intermediate-cert.pem -CAkey intermediate-key.pem \
+	-set_serial 42 -outform der -out $i.der -extfile extensions.txt -extensions $i
+done
+
+Create and sign images:
+
+to_binary_hash.c is an emergency hack for conversion from image3maker output.
+
+The image is generated and signed in the first steps:
+image3maker --create --imagefile iBSS.img3 --type ibot --data iBSS.bin <pass in tags for image here>
+image3maker --hashForSigning --imagefile iBSS.img3 | to_binary_hash > iBSS.hash
+openssl rsautl -sign -inkey leaf-key.pem -in iBSS.hash -out iBSS.sig
+
+It can be tested with various leafs (because all use the same key):
+cat intermediate-cert.der spec-dev-8720-darwin.der > chain.der
+image3maker --signWithData --signWithSignature iBSS.sig --signWithCertChain chain.der --imagefile iBSS.img3
+

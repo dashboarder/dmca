@@ -1,0 +1,106 @@
+/*
+ * Copyright (C) 2011 - 2013 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+
+#ifndef __PLATFORM_SOC_HWREGBASE_H
+#define __PLATFORM_SOC_HWREGBASE_H
+
+#ifndef HWREG_REMAP
+# define HWREG_REMAP(_x)	_x
+#endif
+
+#define AIC_VERSION 			0
+#define AIC_INT_COUNT			(192)
+#define PMGR_WDG_VERSION		0
+
+/* S5L8747X Reg Base Defs */
+
+#define SHA1_BASE_ADDR			HWREG_REMAP(0x38000000)
+
+#define AHB_BASE_ADDR			HWREG_REMAP(0x38100000)
+
+#define DMAC0_BASE_ADDR			HWREG_REMAP(0x38200000)
+#define DMAC1_BASE_ADDR			HWREG_REMAP(0x38700000)
+
+#define SHA2_BASE_ADDR			HWREG_REMAP(0x38300000)
+
+#define USBOTG0_BASE_ADDR		HWREG_REMAP(0x38400000)
+#define USB_OHCI_BASE_ADDR		HWREG_REMAP(0x38500000)
+#define USB_EHCI_BASE_ADDR		HWREG_REMAP(0x39800000)
+#define USBOTG1_BASE_ADDR		HWREG_REMAP(0x39900000)
+#define USBOTG_BASE_ADDR                (USBOTG1_BASE_ADDR)
+#define USBPHY_BASE_ADDR		HWREG_REMAP(0x3C400000)
+#define USBPHY_VERSION			(1)
+
+#define RGBOUT_BASE_ADDR		HWREG_REMAP(0x38900000)
+
+#define AES_BASE_ADDR			HWREG_REMAP(0x38C00000)
+#define AES_VERSION			(1)
+
+#define VIC_BASE_ADDR			HWREG_REMAP(0x38E00000)
+#define VIC_STRIDE			(0x00001000)
+#define VICS_COUNT			(2)
+
+#define EDGEIC_BASE_ADDR		HWREG_REMAP(0x38E02000)
+
+#define SDO_BASE_ADDR			HWREG_REMAP(0x39300000)
+
+#define AAM_BASE_ADDR			HWREG_REMAP(0x39700000)
+#define EINT_NUM_GROUPS			(7)
+#define EINTS_PER_GROUP			(32)
+
+#define SPI0_BASE_ADDR			HWREG_REMAP(0x3C300000)
+#define SPI1_BASE_ADDR			HWREG_REMAP(0x3CE00000)
+#define SPI_VERSION			(1)
+#define SPIS_COUNT			(2)
+
+#define CLKCON_BASE_ADDR		HWREG_REMAP(0x3C500000)
+
+#define IIC0_BASE_ADDR			HWREG_REMAP(0x3C600000)
+#define IIC1_BASE_ADDR			HWREG_REMAP(0x3E500000)
+#define IIC2_BASE_ADDR			HWREG_REMAP(0x3E400000)
+#define IICS_COUNT			(3)
+
+#define TIMER_BASE_ADDR			HWREG_REMAP(0x3C700000)
+#define TIMER_VERSION			(1)
+
+#define WDT_BASE_ADDR			HWREG_REMAP(0x3C800000)
+
+#define UART0_BASE_ADDR			HWREG_REMAP(0x3CC00000)
+#define UART1_BASE_ADDR			HWREG_REMAP(0x3DB00000)
+#define UART2_BASE_ADDR			HWREG_REMAP(0x3DC00000)
+#define UART_VERSION			(1)
+#define UARTS_COUNT			(3)
+
+#define GPIO_BASE_ADDR			HWREG_REMAP(0x3CF00000)
+#define GPIO_FSEL_OFFSET		(0x200)
+// There are 9 groups listed in the user manual, but the last 3
+// aren't actually implemented.
+#define GPIO_GROUP_COUNT		(6) 
+#define GPIO_PAD_SPI			(GPIO_GROUP_COUNT)
+
+#define PKE_BASE_ADDR			HWREG_REMAP(0x3D000000)
+#define PKE_SW_RESET_AVAILABLE		(1)
+
+#define CHIPID_BASE_ADDR		HWREG_REMAP(0x3D100000)
+
+#define AXI_SPINE_BASE_ADDR		HWREG_REMAP(0x3D500000)
+#define DREX_BASE_ADDR	  		HWREG_REMAP(0x3D700000)
+
+#define BUS_BASE_ADDR			HWREG_REMAP(0x3E000000)
+
+#define SRAM_MIU_BASE_ADDR		HWREG_REMAP(0x3E100000)
+
+#define HDMI_LINK_BASE_ADDR		HWREG_REMAP(0x3E200000)
+#define DITHER_VERSION			(1)
+
+#define HDMI_CEC_BASE_ADDR		HWREG_REMAP(0x3E300000)
+
+#endif /* ! __PLATFORM_SOC_HWREGBASE_H */

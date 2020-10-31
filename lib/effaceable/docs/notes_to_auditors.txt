@@ -1,0 +1,18 @@
+Significant changes were made to the structure of the project in the transition between AppleEffaceableStorage-24 and AppleEffaceableStorage-25.
+
+To assist auditors with their task (and anyone else analyzing the history of the project), it is useful to observe the following points:
+
+  * core logic was refactored from the prior classes into a portable core implementation, located in the 'common' directory
+    - compare previous ./AppleEffaceableStorage.cpp to current ./common/effaceable_storage_core.c
+    - compare previous ./AppleEffaceableNAND.cpp to current ./common/effaceable_nand_core.c
+    - compare previous ./AppleEffaceableNOR.cpp to current ./common/effaceable_nor_core.c
+  * additional directory restructuring was done to make major implementation components more obvious to the reader
+    - private headers made available for exither external or internal cross-component use were moved to ./include subdirectory
+    - remaining IOKit code was moved to the ./iokit subdirectory
+    - implementation of the 'effaceable' command line utility was moved to the ./ios subdirectory
+  * more other
+    - there was also a minor bit of new functionality added to support generation and consumption of the private nonce locker
+    - the 'moveMem' system function contract uses 'memmove' arg ordering, so 'bcopy' instances replaced have swapped pointer args
+    - isCopyValid() modified to report real errors; in doing so, structure of logic changed such that all prior checks are negated
+    - deleted all trailing whitespace (with exception of 'queue.h', since it is imported from 'xnu/bsd/sys/queue.h')
+    - converted any tabs that crept in to four space hard indent to match style in majority of project (exception: 'queue.h')

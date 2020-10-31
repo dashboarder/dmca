@@ -1,0 +1,165 @@
+/*
+ * Copyright (C) 2009-2010 Apple Inc. All rights reserved.
+ *
+ * This document is the property of Apple Inc.
+ * It is considered confidential and proprietary.
+ *
+ * This document may not be reproduced or transmitted in any form,
+ * in whole or in part, without the express written permission of
+ * Apple Inc.
+ */
+#ifndef __PLATFORM_SOC_MIU_H
+#define __PLATFORM_SOC_MIU_H
+
+#include <lib/devicetree.h>
+#include <platform/soc/hwregbase.h>
+
+#define	rREMAP_CTL			(*(volatile u_int32_t *)(PIO_BASE_ADDR + 0x0000))
+
+#define rPL310_CONTROL			(*(volatile u_int32_t *)(PL310_BASE_ADDR + 0x0100))
+#define rPL310_INVAL_WAY		(*(volatile u_int32_t *)(PL310_BASE_ADDR + 0x077C))
+#define rPL310_FILTER_START		(*(volatile u_int32_t *)(PL310_BASE_ADDR + 0x0C00))
+#define rPL310_FILTER_END		(*(volatile u_int32_t *)(PL310_BASE_ADDR + 0x0C04))
+
+#define rSCU_CONTROL			(*(volatile u_int32_t *)(SCU_BASE_ADDR + 0x0000))
+#define rSCU_POWER_STATUS		(*(volatile u_int32_t *)(SCU_BASE_ADDR + 0x0008))
+#define rSCU_TAG_INVAL			(*(volatile u_int32_t *)(SCU_BASE_ADDR + 0x000C))
+
+#define rCIF_CONTROL			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x0000))
+#define rCIF_CLKGATE			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x0004))
+#define rCIF_RTLIMIT			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x0008))
+#define rCIF_WTLIMIT			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x000C))
+#define rCIF_IDLETMR			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x0010))
+#define rCIF_RDREMAP			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x0040))
+#define rCIF_WRREMAP			(*(volatile u_int32_t *)(CIF_BASE_ADDR + 0x0044))
+
+#define  CDIO_IOP_RTLIMIT		(0x0008)
+#define rCDIO_IOP_RTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_IOP_RTLIMIT))
+#define  CDIO_IOP_WTLIMIT		(0x000C)
+#define rCDIO_IOP_WTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_IOP_WTLIMIT))
+#define  CDIO_IOP_WREQSP		(0x001C)
+#define rCDIO_IOP_WREQSP		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_IOP_WREQSP))
+#define  CDIO_CDMA_RTLIMIT		(0x0028)
+#define rCDIO_CDMA_RTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_CDMA_RTLIMIT))
+#define  CDIO_CDMA_WTLIMIT		(0x002C)
+#define rCDIO_CDMA_WTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_CDMA_WTLIMIT))
+#define  CDIO_CDMA_WGATHER		(0x0030)
+#define rCDIO_CDMA_WGATHER		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_CDMA_WGATHER))
+#define  CDIO_UPERF_RTLIMIT		(0x0048)
+#define rCDIO_UPERF_RTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_UPERF_RTLIMIT))
+#define  CDIO_UPERF_WTLIMIT		(0x004C)
+#define rCDIO_UPERF_WTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_UPERF_WTLIMIT))
+#define  CDIO_UPERF_WGATHER		(0x0050)
+#define rCDIO_UPERF_WGATHER		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_UPERF_WGATHER))
+#define  CDIO_AUDIO_RTLIMIT		(0x0068)
+#define rCDIO_AUDIO_RTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_AUDIO_RTLIMIT))
+#define  CDIO_AUDIO_WTLIMIT		(0x006C)
+#define rCDIO_AUDIO_WTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_AUDIO_WTLIMIT))
+#define  CDIO_AUDIO_WGATHER		(0x0070)
+#define rCDIO_AUDIO_WGATHER		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_AUDIO_WGATHER))
+#define  CDIO_PIO_RTLIMIT		(0x00A8)
+#define rCDIO_PIO_RTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_PIO_RTLIMIT))
+#define  CDIO_PIO_WTLIMIT		(0x00AC)
+#define rCDIO_PIO_WTLIMIT		(*(volatile u_int32_t *)(CDIO_WIDGETS_BASE_ADDR + CDIO_PIO_WTLIMIT))
+
+#define  CDIO_AR_CHAN_ARB_MI0		(0x0408)
+#define rCDIO_AR_CHAN_ARB_MI0		(*(volatile u_int32_t *)(CDIO_PL301_BASE_ADDR + CDIO_AR_CHAN_ARB_MI0))
+#define  CDIO_AW_CHAN_ARB_MI0		(0x040C)
+#define rCDIO_AW_CHAN_ARB_MI0		(*(volatile u_int32_t *)(CDIO_PL301_BASE_ADDR + CDIO_AW_CHAN_ARB_MI0))
+#define  CDIO_AR_CHAN_ARB_MI1		(0x0428)
+#define rCDIO_AR_CHAN_ARB_MI1		(*(volatile u_int32_t *)(CDIO_PL301_BASE_ADDR + CDIO_AR_CHAN_ARB_MI1))
+#define  CDIO_AW_CHAN_ARB_MI1		(0x042C)
+#define rCDIO_AW_CHAN_ARB_MI1		(*(volatile u_int32_t *)(CDIO_PL301_BASE_ADDR + CDIO_AW_CHAN_ARB_MI1))
+
+#define  UPERF_OTG_QOS			(0x0014)
+#define rUPERF_OTG_QOS			(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_OTG_QOS))
+#define  UPERF_OTG_CACHE		(0x0018)
+#define rUPERF_OTG_CACHE		(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_OTG_CACHE))
+#define  UPERF_EHCI_QOS			(0x0034)
+#define rUPERF_EHCI_QOS			(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_EHCI_QOS))
+#define  UPERF_EHCI_CACHE		(0x0038)
+#define rUPERF_EHCI_CACHE		(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_EHCI_CACHE))
+#define  UPERF_OHCI0_QOS		(0x0054)
+#define rUPERF_OHCI0_QOS		(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_OHCI0_QOS))
+#define  UPERF_OHCI0_CACHE		(0x0058)
+#define rUPERF_OHCI0_CACHE		(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_OHCI0_CACHE))
+#define  UPERF_OHCI1_QOS		(0x0074)
+#define rUPERF_OHCI1_QOS		(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_OHCI1_QOS))
+#define  UPERF_OHCI1_CACHE		(0x0078)
+#define rUPERF_OHCI1_CACHE		(*(volatile u_int32_t *)(UPERF_WIDGETS_BASE_ADDR + UPERF_OHCI1_CACHE))
+
+#define  HPERF_NRT_DART_DART_RTLIMIT	(0x0004)
+#define rHPERF_NRT_DART_DART_RTLIMIT	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_DART_RTLIMIT))
+#define  HPERF_NRT_DART_DART_WTLIMIT	(0x0008)
+#define rHPERF_NRT_DART_DART_WTLIMIT	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_DART_WTLIMIT))
+#define  HPERF_NRT_DART_JPEG0_QOS	(0x000C)
+#define rHPERF_NRT_DART_JPEG0_QOS	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_JPEG0_QOS))
+#define  HPERF_NRT_DART_JPEG1_QOS	(0x0010)
+#define rHPERF_NRT_DART_JPEG1_QOS	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_JPEG1_QOS))
+#define  HPERF_NRT_DART_SCALER0_RTLIMIT	(0x001C)
+#define rHPERF_NRT_DART_SCALER0_RTLIMIT	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_SCALER0_RTLIMIT))
+#define  HPERF_NRT_DART_SCALER0_WTLIMIT	(0x0020)
+#define rHPERF_NRT_DART_SCALER0_WTLIMIT	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_SCALER0_WTLIMIT))
+#define  HPERF_NRT_DART_SCALER1_RTLIMIT	(0x0030)
+#define rHPERF_NRT_DART_SCALER1_RTLIMIT	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_SCALER1_RTLIMIT))
+#define  HPERF_NRT_DART_SCALER1_WTLIMIT	(0x0034)
+#define rHPERF_NRT_DART_SCALER1_WTLIMIT	(*(volatile u_int32_t *)(NRT_DART_WIDGETS_BASE_ADDR + HPERF_NRT_DART_SCALER1_WTLIMIT))
+
+#define  HPERF_NRT_DART_AR_CHAN_ARB_MI	(0x0408)
+#define rHPERF_NRT_DART_AR_CHAN_ARB_MI	(*(volatile u_int32_t *)(NRT_DART_PL301_BASE_ADDR + HPERF_NRT_DART_AR_CHAN_ARB_MI0))
+#define  HPERF_NRT_DART_AW_CHAN_ARB_MI	(0x040C)
+#define rHPERF_NRT_DART_AW_CHAN_ARB_MI	(*(volatile u_int32_t *)(NRT_DART_PL301_BASE_ADDR + HPERF_NRT_DART_AW_CHAN_ARB_MI0))
+
+#define  HPERF_NRT_TOP_TOP_RTLIMIT	(0x0000)
+#define rHPERF_NRT_TOP_TOP_RTLIMIT	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_TOP_RTLIMIT))
+#define  HPERF_NRT_TOP_TOP_WTLIMIT	(0x0004)
+#define rHPERF_NRT_TOP_TOP_WTLIMIT	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_TOP_WTLIMIT))
+#define  HPERF_NRT_TOP_VENC_RTLIMIT	(0x0010)
+#define rHPERF_NRT_TOP_VENC_RTLIMIT	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_VENC_RTLIMIT))
+#define  HPERF_NRT_TOP_VENC_WTLIMIT	(0x0014)
+#define rHPERF_NRT_TOP_VENC_WTLIMIT	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_VENC_WTLIMIT))
+#define  HPERF_NRT_TOP_VENC_WREQSP	(0x0018)
+#define rHPERF_NRT_TOP_VENC_WREQSP	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_VENC_WREQSP))
+#define  HPERF_NRT_TOP_VDEC_RTLIMIT	(0x0028)
+#define rHPERF_NRT_TOP_VDEC_RTLIMIT	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_VDEC_RTLIMIT))
+#define  HPERF_NRT_TOP_VDEC_WTLIMIT	(0x002C)
+#define rHPERF_NRT_TOP_VDEC_WTLIMIT	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_VDEC_WTLIMIT))
+#define  HPERF_NRT_TOP_VDEC_WREQSP	(0x0030)
+#define rHPERF_NRT_TOP_VDEC_WREQSP	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_VDEC_WREQSP))
+#define  HPERF_NRT_TOP_DART_WGATHER	(0x0048)
+#define rHPERF_NRT_TOP_DART_WGATHER	(*(volatile u_int32_t *)(NRT_TOP_WIDGETS_BASE_ADDR + HPERF_NRT_TOP_DART_WGATHER))
+
+#define  HPERF_NRT_TOP_AR_CHAN_ARB_MI	(0x0408)
+#define rHPERF_NRT_TOP_AR_CHAN_ARB_MI	(*(volatile u_int32_t *)(NRT_TOP_PL301_BASE_ADDR + HPERF_NRT_TOP_AR_CHAN_ARB_MI0))
+#define  HPERF_NRT_TOP_AW_CHAN_ARB_MI	(0x040C)
+#define rHPERF_NRT_TOP_AW_CHAN_ARB_MI	(*(volatile u_int32_t *)(NRT_TOP_PL301_BASE_ADDR + HPERF_NRT_TOP_AW_CHAN_ARB_MI0))
+
+#define  HPERF_RT_TOP_DISP0_RTLIMIT	(0x0004)
+#define rHPERF_RT_TOP_DISP0_RTLIMIT	(*(volatile u_int32_t *)(RT_TOP_WIDGETS_BASE_ADDR + HPERF_RT_TOP_DISP0_RTLIMIT))
+#define  HPERF_RT_TOP_DISP1_RTLIMIT	(0x000C)
+#define rHPERF_RT_TOP_DISP1_RTLIMIT	(*(volatile u_int32_t *)(RT_TOP_WIDGETS_BASE_ADDR + HPERF_RT_TOP_DISP1_RTLIMIT))
+#define  HPERF_RT_TOP_ISP_RTLIMIT	(0x0018)
+#define rHPERF_RT_TOP_ISP_RTLIMIT	(*(volatile u_int32_t *)(RT_TOP_WIDGETS_BASE_ADDR + HPERF_RT_TOP_ISP_WTLIMIT))
+#define  HPERF_RT_TOP_ISP_WTLIMIT	(0x001C)
+#define rHPERF_RT_TOP_ISP_WTLIMIT	(*(volatile u_int32_t *)(RT_TOP_WIDGETS_BASE_ADDR + HPERF_RT_TOP_ISP_RTLIMIT))
+#define  HPERF_RT_TOP_TOP_RTLIMIT	(0x0020)
+#define rHPERF_RT_TOP_TOP_RTLIMIT	(*(volatile u_int32_t *)(RT_TOP_WIDGETS_BASE_ADDR + HPERF_RT_TOP_TOP_WTLIMIT))
+#define  HPERF_RT_TOP_TOP_WTLIMIT	(0x0024)
+#define rHPERF_RT_TOP_TOP_WTLIMIT	(*(volatile u_int32_t *)(RT_TOP_WIDGETS_BASE_ADDR + HPERF_RT_TOP_TOP_RTLIMIT))
+
+#define  HPERF_RT_TOP_AR_CHAN_ARB_MI	(0x0408)
+#define rHPERF_RT_TOP_AR_CHAN_ARB_MI	(*(volatile u_int32_t *)(RT_TOP_PL301_BASE_ADDR + HPERF_RT_TOP_AR_CHAN_ARB_MI0))
+#define  HPERF_RT_TOP_AW_CHAN_ARB_MI	(0x040C)
+#define rHPERF_RT_TOP_AW_CHAN_ARB_MI	(*(volatile u_int32_t *)(RT_TOP_PL301_BASE_ADDR + HPERF_RT_TOP_AW_CHAN_ARB_MI0))
+
+
+enum remap_select {
+  REMAP_SRAM = 0,
+  REMAP_SDRAM
+};
+
+extern void miu_select_remap(enum remap_select sel);
+extern void miu_bypass_prep(void);
+extern void miu_update_device_tree(DTNode *pmgr_node);
+
+#endif /* ! __PLATFORM_SOC_MIU_H */
