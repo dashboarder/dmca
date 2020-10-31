@@ -290,3 +290,4 @@ $(ACTIONS):
 	@echo "%%%%%% $(action) $(application)"
 	@$(MAKE) $(MAKEJOBS) -f apps/$(application)/$(application).mk $(action) SDKROOT=$(SDKROOT_PATH) APPLICATION=$(application) MAKEPHASE=$(action)
 endif
+
