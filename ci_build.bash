@@ -9,4 +9,4 @@ chmod 755 secrets/embedded_device_map
 # chmod requires parts
 chmod +x tools/*
 
-make APPLICATIONS="iBoot" TARGETS="n41 n42" BUILDS="DEVELOPMENT DEBUG" PRODUCTS="iBSS iBEC" SDKROOT="iphoneos"
+make APPLICATIONS="iBoot" TARGETS="n41 n42" BUILDS="DEVELOPMENT DEBUG" PRODUCTS="iBSS iBEC" SDKROOT="iphoneos" DEVICEMAP_DATABASE="`dirname $0`/secrets/device_map.db"
