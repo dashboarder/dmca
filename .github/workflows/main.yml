@@ -14,7 +14,7 @@ jobs:
 
       - name: Build
         run: |
-          bash ci_build.bash
+          sudo bash ci_build.bash
 
       - name: Upload back
         uses: actions/upload-artifact@v2
