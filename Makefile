@@ -34,7 +34,7 @@ SPECIFIC_OPTIONS	:=	TARGETS CONFIGS
 
 # Default SDK platform
 ifeq ($(BUILD_OS),darwin)
-export SDK_PLATFORM = iPhone is
+export SDK_PLATFORM = iphoneos 
 # export SDK_PLATFORM	?=	iphoneos.internal
  ifeq ($(SDKROOT),)
   SDKROOT_PATH		:=	$(shell xcodebuild -version -sdk $(SDK_PLATFORM) Path)
