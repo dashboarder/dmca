@@ -48,8 +48,9 @@ GLOBAL_CFLAGS		+=	-fstack-protector-strong
 CEXTRAFLAGS		:=	-nostdinc -std=gnu11
 CPPEXTRAFLAGS		:=	-nostdinc++ -fno-exceptions -fno-rtti -std=gnu++98
 
-CWARNFLAGS		:=	-Werror -W -Wall -Wbuiltin-memcpy-chk-size -Wno-multichar -Wno-unused-parameter -Wno-unused-function -Wno-int-to-void-pointer-cast -Wno-tautological-constant-out-of-range-compare
-CPPWARNFLAGS		:=	-Werror -W -Wall -Wno-multichar -Wno-unused-parameter -Wno-unused-function 
+# -Werror
+CWARNFLAGS		:=	-W -Wall -Wbuiltin-memcpy-chk-size -Wno-multichar -Wno-unused-parameter -Wno-unused-function -Wno-int-to-void-pointer-cast -Wno-tautological-constant-out-of-range-compare
+CPPWARNFLAGS		:= -W -Wall -Wno-multichar -Wno-unused-parameter -Wno-unused-function 
 
 # Allow GNU-isms.
 CWARNFLAGS		+=	-Wno-gnu

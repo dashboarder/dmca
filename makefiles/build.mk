@@ -22,7 +22,8 @@ _CFLAGS			:=	$(GLOBAL_CFLAGS) $(CEXTRAFLAGS) $(CWARNFLAGS)
 _CPPFLAGS		:=	$(GLOBAL_CFLAGS) $(CPPEXTRAFLAGS) $(CPPWARNFLAGS)
 
 # extra flags to bring in the compiler runtime, since we turn it off via -nodefaultlibs
-_RUNTIME_FLAGS		:=	-L$(SDKROOT)/usr/local/lib -lcompiler_rt-static $(LIBBUILTIN_BUILD)
+_RUNTIME_FLAGS		:=	-L$(SDKROOT)/usr/local/lib $(LIBBUILTIN_BUILD)
+# -lcompiler_rt-static
 
 # produce coverage info, but don't add profiling into the built binaries
 # this lets us compare coverage from unit tests to the lines built for real targets
